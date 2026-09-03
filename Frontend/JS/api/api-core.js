@@ -1,7 +1,10 @@
-// Khi Node phục vụ frontend (http://localhost:4000), dùng cùng origin để tránh CORS.
-window.ERP_API_BASE_URL = window.ERP_API_BASE_URL || (window.location.port === '4000'
-  ? `${window.location.origin}/api`
-  : 'http://127.0.0.1:4000/api');
+// Khi backend Node phục vụ frontend (localhost:4000 hoặc Railway), dùng cùng
+// origin. Chỉ khi mở file frontend qua web server local riêng mới gọi API local.
+const isStandaloneLocalFrontend = ['127.0.0.1', 'localhost'].includes(window.location.hostname)
+  && window.location.port !== '4000';
+window.ERP_API_BASE_URL = window.ERP_API_BASE_URL || (isStandaloneLocalFrontend
+  ? 'http://127.0.0.1:4000/api'
+  : `${window.location.origin}/api`);
 
 window.erpApi = async function erpApi(path, options = {}) {
   const token = sessionStorage.getItem('accessToken');
