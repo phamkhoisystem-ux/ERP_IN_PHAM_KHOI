@@ -1,0 +1,44 @@
+        <div id="tab-banhang" class="module">
+            <div class="card">
+                <div class="card-header" style="border: none; padding-bottom: 0;">
+                    <h2>Lập Lệnh Bán Hàng <span id="draft_notice_bh" class="draft-notice">Đã khôi phục dữ liệu nháp...</span></h2>
+                </div>
+                <div class="grid-4" style="margin-top: 15px;">
+                    <div class="form-group"><label>Ngày Bán</label><input type="date" id="bh_ngay"></div>
+                    <div class="form-group"><label>Khách hàng</label><select id="bh_customer_directory" onchange="selectSalesCustomer(this.value)"><option value="">— Chọn từ Danh bạ (không bắt buộc) —</option></select><input type="text" id="bh_kh" placeholder="Hoặc tự nhập tên khách hàng" style="margin-top:8px;" oninput="clearSalesDirectorySelection()"></div>
+                    <div class="form-group"><label>Bài In Xuất Bán</label><select id="bh_anpham" onchange="tinhLoiNhuanBanHang()"></select></div>
+					<div class="form-group"><label>Tiền sẽ thu vào Ví</label>
+					<select id="bh_wallet" style="border-color:#1e8e3e; font-weight:bold;">
+					<option value="TIENMAT">💵 Tiền Mặt</option>
+					<option value="THIENLONG">💳 Bank Thiên Long</option>
+					<option value="ACB">💳 Bank ACB</option>
+					</select>
+</div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group"><label>Số Lượng Bán</label><input type="text" class="format-number" id="bh_sl" value="0" oninput="tinhLoiNhuanBanHang()"></div>
+                    <div class="form-group"><label>Doanh Thu (Chưa VAT)</label><input type="text" class="format-number" id="bh_tien" value="0" oninput="tinhLoiNhuanBanHang()"></div>
+                    <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+                        <label class="vat-box"><input type="checkbox" id="bh_vat" onchange="tinhLoiNhuanBanHang()"> + VAT 8%</label>
+                        <div style="flex:1"><label>Khách Phải Trả</label><input type="text" id="bh_tongthu" readonly style="background:#f1f3f4; font-weight:bold; color:#1a73e8"></div>
+                    </div>
+                </div>
+                <div class="grid-2" style="background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #ddd; margin-bottom: 15px;">
+                    <div><label>Tổng Giá Vốn Tính Từ Lệnh Sản Xuất:</label><div id="bh_giavon_view" style="font-weight:bold; color:#5f6368; font-size:16px;">0 đ</div></div>
+                    <div><label>LỢI NHUẬN (TRÊN DOANH THU THUẦN):</label><div id="bh_loinhuan_view" style="font-weight:bold; color:#1e8e3e; font-size:22px;">0 đ</div></div>
+                </div>
+                <button class="btn-main" onclick="saveBanHang()">XUẤT KHO & LƯU DOANH THU</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Bán Hàng</h2></div>
+                <div class="filter-bar">
+                    <select id="f_month_bh" class="f-select" onchange="renderBanHang()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                    <select id="f_year_bh" class="f-select" onchange="renderBanHang()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                    <input type="text" id="search_bh" placeholder="Tìm khách hàng..." style="width:200px; margin-left:15px;" oninput="renderBanHang()">
+                </div>
+                <table>
+                    <thead><tr><th>Ngày</th><th>Khách Hàng</th><th>Bài In Bán</th><th>Số Lượng</th><th>Thuần (Chưa VAT)</th><th>Thực Thu</th><th>Lợi Nhuận</th></tr></thead>
+                    <tbody id="table_banhang"></tbody>
+                </table>
+            </div>
+        </div>

@@ -1,0 +1,151 @@
+        <div id="tab-taichinh" class="module">
+            <div class="filter-bar" style="background: linear-gradient(135deg, #9334e6 0%, #b388ff 100%); color: white; border: none;">
+                <b>Báo Cáo Tài Chính: </b>
+                <select id="f_month_tc" class="f-select" onchange="renderTaiChinh()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_tc" class="f-select" onchange="renderTaiChinh()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <button class="btn-small btn-success" style="margin-left: auto;" onclick="moFormNhapTaiChinh()">+ Cập Nhật Phụ Phí OPEX</button>
+            </div>
+            <div class="summary-box">
+                <div class="summary-grid">
+                    <div class="summary-item"><div class="summary-value" id="sum_doanhthu">0</div><div class="summary-label">Doanh Thu Thuần</div></div>
+                    <div class="summary-item"><div class="summary-value" id="sum_loinhuan">0</div><div class="summary-label">Lợi Nhuận Gộp</div></div>
+                    <div class="summary-item"><div class="summary-value" id="sum_tienmat">0</div><div class="summary-label">Tiền Mặt Cuối Kỳ</div></div>
+                    <div class="summary-item"><div class="summary-value" id="sum_ratio">0%</div><div class="summary-label">Biên LN Gộp</div></div>
+                </div>
+            </div>
+			<div id="finance_period_notice" style="display:none; margin:0 0 16px; padding:12px 14px; border-radius:8px; background:#fff7ed; border:1px solid #fed7aa; color:#9a3412;"></div>
+			<div class="card" style="border-top: 5px solid var(--purple);">
+    <div class="card-header">
+        <h2>📈 PHÂN TÍCH XU HƯỚNG DOANH THU & LỢI NHUẬN</h2>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-small btn-outline" onclick="renderCharts('year')">12 Tháng</button>
+            <button class="btn-small btn-outline" onclick="renderCharts('quarter')">4 Quý</button>
+        </div>
+    </div>
+    <div style="height: 350px;">
+        <canvas id="finChart"></canvas>
+    </div>
+</div>
+            <div class="fin-tabs">
+                <button class="fin-tab active" onclick="switchFinTab('pl')">📊 P&L - KQKD</button>
+                <button class="fin-tab" onclick="switchFinTab('cashflow')">💰 Cash Flow</button>
+                <button class="fin-tab" onclick="switchFinTab('balance')">⚖️ Cân Đối Kế Toán</button>
+                <button class="fin-tab" onclick="switchFinTab('ratios')">📈 Chỉ Số Sức Khỏe</button>
+				<button class="fin-tab" onclick="switchFinTab('sales-report')">📈 Báo Cáo Bán Hàng</button>
+            </div>
+            <div id="fin-pl" class="fin-content active">
+                <div class="card">
+                    <div class="card-header"><h2>Báo Cáo Kết Quả Hoạt Động Kinh Doanh (P&L)</h2><button class="btn-small btn-print" onclick="printReport('pl')">In báo cáo</button></div>
+                    <table class="report-table">
+                        <thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th><th class="text-right">Tỷ Trọng</th></tr></thead>
+                        <tbody id="pl_table_body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="fin-cashflow" class="fin-content">
+                <div class="card">
+                    <div class="card-header"><h2>Báo Cáo Lưu Chuyển Tiền Tệ (Cash Flow)</h2><button class="btn-small btn-print" onclick="printReport('cashflow')">In báo cáo</button></div>
+                    <table class="report-table">
+                        <thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th></tr></thead>
+                        <tbody id="cf_table_body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="fin-balance" class="fin-content">
+                <div class="card">
+                    <div class="card-header"><h2>Bảng Cân Đối Kế Toán (Balance Sheet)</h2><button class="btn-small btn-print" onclick="printReport('balance')">In báo cáo</button></div>
+                    <div class="grid-2">
+                        <div>
+                            <h3 style="color: #1a73e8;">TÀI SẢN</h3>
+                            <table class="report-table"><thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th></tr></thead><tbody id="bs_assets_body"></tbody></table>
+                        </div>
+                        <div>
+                            <h3 style="color: #d93025;">NỢ PHẢI TRẢ & VỐN CSH</h3>
+                            <table class="report-table"><thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th></tr></thead><tbody id="bs_liabilities_body"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="fin-ratios" class="fin-content">
+                <div class="card">
+                    <div class="card-header"><h2>Chỉ Số Sức Khỏe Tài Chính</h2></div>
+                    <div class="grid-3" id="ratios_grid"></div>
+                </div>
+            </div>
+<div id="fin-sales-report" class="fin-content">
+    <div class="card">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0">📊 BÁO CÁO BÁN HÀNG TỔNG HỢP</h2>
+            <span style="color:#1e8e3e; font-size:13px; font-weight:bold;"><i>* Tự động đồng bộ số liệu từ Tab 4 (Xuất Bán Hàng)</i></span>
+        </div>
+        <div class="grid-2" style="gap: 20px;">
+            <div class="card" style="border-top: 4px solid var(--info); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">🏆 Top Sản phẩm bán chạy (Doanh thu)</h4>
+                <div id="stat_products" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--success); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">💰 Biên lợi nhuận theo Sản phẩm</h4>
+                <div id="stat_margin" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--warning); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">💎 Top Khách hàng VIP</h4>
+                <div id="stat_vip" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--purple); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">📦 Top Sản lượng Xuất kho (Số lượng SP)</h4>
+                <div id="stat_qty" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+            <div id="form_nhap_taichinh" class="card" style="display:none; border: 2px solid #9334e6;">
+                <div class="card-header">
+                    <h2 style="color: #9334e6;">Cập Nhật Phụ Phí Tài Chính & Đầu Tư</h2>
+                    <button class="btn-small btn-outline" onclick="document.getElementById('form_nhap_taichinh').style.display='none'">Đóng</button>
+                </div>
+                <p style="margin-bottom: 15px; color: #5f6368; font-size: 13px;"><i>* Mọi thông số Sếp nhập sẽ được <b>LƯU TỰ ĐỘNG</b> ngay lập tức vào báo cáo. Tiền Lương đã được LINK TỰ ĐỘNG từ Module Nhân Sự.</i></p>
+                <div class="grid-2">
+                    <div class="input-section">
+                        <h4>📈 DOANH THU & GIÁ VỐN</h4>
+<div class="form-group"><label>Doanh thu CHƯA VAT (Tự động từ Tab 4)</label><input type="text" class="format-number readonly-field" id="tc_doanhthu" readonly></div>
+<div class="form-group"><label>Giá vốn hàng bán (Tự động từ Tab 4)</label><input type="text" class="format-number readonly-field" id="tc_giavon" readonly></div>
+<div class="form-group"><label>Chiết khấu doanh thu</label><input type="text" class="format-number" id="tc_giamtru" value="0" oninput="saveTaiChinh(false)"></div>
+                    </div>
+                    <div class="input-section">
+                        <h4>💼 CHI PHÍ HOẠT ĐỘNG (OPEX)</h4>
+                        <div class="form-group"><label>Chi phí Bán hàng (Tự động từ Sổ Quỹ)</label><input type="text" class="format-number readonly-field" id="tc_cp_banhang" readonly style="color:#d93025; font-weight:bold;"></div>
+<div class="form-group"><label>Chi phí vận hành (Tự động từ Sổ Quỹ)</label><input type="text" class="format-number readonly-field" id="tc_cp_quanly" readonly style="color:#d93025; font-weight:bold;"></div>
+<div class="form-group">
+    <label>Khấu hao tài sản (Auto từ Báo cáo TS)</label>
+    <input type="text" class="format-number readonly-field" id="tc_khauhao" readonly style="color: var(--orange);">
+</div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="input-section">
+                        <h4>💰 DÒNG TIỀN</h4>
+<div class="form-group"><label>Tiền thu từ KH (Tự động từ Tab 4)</label><input type="text" class="format-number readonly-field" id="tc_tien_thu" readonly style="color: #1a73e8; font-weight: bold;"></div>						<div class="form-group"><label>Tiền trả NCC (Từ Phiếu Chi)</label><input type="text" class="format-number readonly-field" id="tc_tien_tra_ncc" readonly></div>
+                        <div class="form-group"><label>Tiền trả lương NV (Auto từ Module Lương)</label><input type="text" class="format-number readonly-field" id="tc_tien_luong" readonly style="color: #d93025; font-weight: bold;"></div>
+<div class="form-group"><label>Tiền chi đầu tư (Mua máy móc - Auto)</label><input type="text" class="format-number readonly-field" id="tc_tien_dautu" readonly style="color:#d93025;"></div><div class="form-group"><label>Tiền đi vay / gọi vốn (Tự động từ Tab 10)</label><input type="text" class="format-number readonly-field" id="tc_tien_vay" readonly style="color: #1e8e3e; font-weight: bold;"></div><div class="form-group"><label>Tiền trả nợ gốc/lãi vay (Tự động từ Tab 10)</label><input type="text" class="format-number readonly-field" id="tc_tien_trano" readonly style="color: #d93025;"></div>                    </div>
+                    <div class="input-section">
+                        <h4>📊 TÀI SẢN & NỢ CÒN LẠI</h4>
+<div class="form-group"><label>Tiền mặt & Ngân hàng đầu kỳ (Auto từ Sổ Quỹ)</label><input type="text" class="format-number readonly-field" id="tc_tien_dauky" readonly style="color:#1a73e8; font-weight:bold;"></div>                        <div class="form-group"><label>Giá trị hàng tồn kho (Từ Kho)</label><input type="text" class="format-number readonly-field" id="tc_tonkho" readonly></div>
+                        <div class="form-group"><label>Nợ ngắn hạn NCC (Từ Sổ Cái)</label><input type="text" class="format-number readonly-field" id="tc_no_nganhan" readonly></div>
+                        <div class="form-group"><label>Công nợ tháng này</label><input type="text" class="format-number" id="tc_phaithu" value="0" oninput="saveTaiChinh(false)"></div>
+<div class="form-group"><label>Tài sản dài hạn (Máy móc - Tự động từ Tab 8)</label><input type="text" class="format-number readonly-field" id="tc_taisan_daihan" readonly style="color: #f29900; font-weight: bold;"></div>
+<div class="form-group"><label>Nợ dài hạn (Vay NH - Tự động từ Tab 10)</label><input type="text" class="format-number readonly-field" id="tc_no_daihan" readonly style="color: #d93025; font-weight: bold;"></div>                    </div>
+                </div>
+                <button class="btn-main" onclick="saveTaiChinh(true)" style="background: #1e8e3e;">✔️ HỆ THỐNG ĐÃ TỰ ĐỘNG LƯU. BẤM ĐỂ ĐÓNG.</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Báo Cáo Các Tháng (Tự động Update)</h2></div>
+                <div class="history-table">
+                    <table>
+                        <thead><tr><th>Tháng/Năm</th><th>Doanh Thu Thuần</th><th>Lợi Nhuận Gộp</th><th>Lợi Nhuận Ròng</th><th>Tiền Mặt Cuối Kỳ</th></tr></thead>
+                       <tbody id="table_lichsu_tc"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+

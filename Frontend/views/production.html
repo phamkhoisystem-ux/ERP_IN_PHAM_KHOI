@@ -1,0 +1,19 @@
+        <div id="tab-sanxuat" class="module">
+            <div class="filter-bar">
+                <b>Bộ lọc Kanban Tháng: </b>
+                <select id="f_month_sx" class="f-select" onchange="renderSanXuat()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_sx" class="f-select" onchange="renderSanXuat()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <span style="margin-left:20px; font-size:13px; color:#1e8e3e"><i>*Kéo thả thẻ để cập nhật trạng thái.</i></span>
+            </div>
+            <div class="kanban-board">
+                <div class="kanban-col" id="col-dangin" ondrop="drop(event, 'Đang in')" ondragover="allowDrop(event)">
+                    <h3 style="color:#1a73e8;">⚙️ Đang In / Chờ In</h3><div id="list-dangin" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+                <div class="kanban-col" id="col-danggiacong" ondrop="drop(event, 'Đang gia công')" ondragover="allowDrop(event)">
+                    <h3 style="color:#f29900;">✂️ Đang Gia Công</h3><div id="list-danggiacong" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+                <div class="kanban-col" id="col-hoanthanh" ondrop="drop(event, 'Hoàn thành')" ondragover="allowDrop(event)">
+                    <h3 style="color:#1e8e3e;">📦 Hoàn Thành (Vào Kho)</h3><div id="list-hoanthanh" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+            </div>
+        </div>

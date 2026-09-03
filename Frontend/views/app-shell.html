@@ -1,0 +1,84 @@
+</head>
+<body>
+	<div id="print_receipt_area" style="display:none; font-family: 'Times New Roman', serif; line-height: 1.5; color:#000;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="margin:0; font-size: 24px; text-transform: uppercase;" id="prt_title">PHIẾU THU TIỀN</h2>
+        <p style="margin:5px 0 0 0; font-style: italic;" id="prt_date">Ngày ... tháng ... năm ...</p>
+    </div>
+    <table style="width: 100%; border: none; font-size: 16px;">
+        <tr><td style="width: 150px; padding: 5px 0;"><b>Họ, tên người nộp/nhận:</b></td><td id="prt_name" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+        <tr><td style="padding: 5px 0;"><b>Lý do:</b></td><td id="prt_reason" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+        <tr><td style="padding: 5px 0;"><b>Số tiền:</b></td><td style="padding: 5px 0; border-bottom: 1px dotted #ccc;"><b id="prt_amount"></b> VNĐ</td></tr>
+        <tr><td style="padding: 5px 0;"><b>Nguồn quỹ (Ví):</b></td><td id="prt_wallet" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+        <tr><td style="padding: 5px 0;"><b>Hạng mục:</b></td><td id="prt_category" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+    </table>
+    <div style="display: flex; justify-content: space-between; margin-top: 40px; text-align: center;">
+        <div style="width: 30%;"><b>Người lập phiếu</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
+        <div style="width: 30%;"><b>Người nộp/nhận</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
+        <div style="width: 30%;"><b>Giám đốc (Sếp)</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
+    </div>
+</div>
+	<div id="print_production_area" style="display:none; font-family:'Times New Roman', serif; line-height:1.5; color:#000;"></div>
+	<div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 350px;">
+        <h1 style="font-size: 20px; margin-bottom: 10px;">PHẠM KHÔI ERP</h1>
+        <p style="color: #666; margin-bottom: 25px; font-size: 14px;">Đăng nhập bằng tài khoản được quản trị viên cấp</p>
+        <input type="text" id="username-input" autocomplete="username" placeholder="Tên đăng nhập"
+            style="width: 100%; padding: 13px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
+        <input type="password" id="password-input" autocomplete="current-password" placeholder="Mật khẩu"
+            style="width: 100%; padding: 13px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
+        
+        <button onclick="verifyLogin()" 
+            style="width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">
+            MỞ KHÓA HỆ THỐNG
+        </button>
+        
+        <p id="login-error" style="color: red; font-size: 13px; margin-top: 15px; display: none;">❌ Mã PIN không chính xác!</p>
+    </div>
+    <p style="margin-top: 20px; color: #999; font-size: 12px;">© 2026 Bao Bì Giấy Phạm Khôi</p>
+</div>
+    <datalist id="list-ncc"></datalist>
+    <datalist id="list-kho"><option value="43x32.5"></option><option value="65x43"></option><option value="65x86"></option><option value="79x54"></option><option value="79x109"></option></datalist>
+<div class="mobile-header">
+    <h1 style="margin: 0; font-size: 18px; color: #1a73e8;">PHẠM KHÔI ERP</h1>
+    <button onclick="toggleMobileMenu()" style="background: none; border: none; font-size: 24px; padding: 0; cursor: pointer;">☰</button>
+</div>
+    <div class="sidebar" id="mySidebar">
+        <h1>Phạm Khôi ERP</h1>
+        <button class="nav-btn active" onclick="openTab(event, 'tab-kehoach')">1. Lập Kế Hoạch / Lệnh SX</button>
+        <button class="nav-btn" id="btn_nav_kanban" onclick="openTab(event, 'tab-sanxuat')">2. Tiến Độ KANBAN</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-tonkho')">3. Báo cáo Tồn Kho</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-danhba')">4. Danh bạ</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-banhang')">5. Xuất Bán Hàng</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-congno')">6. Sổ Cái Công Nợ (VAT)</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-baocao')">7. Dashboard Sản Xuất</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-luong')" style="color: var(--orange);">8. Báo cáo Lương & KPI</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-taisan')" style="color: var(--orange);">9. Báo cáo Tài Sản (Khấu hao)</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-khoanvay')" style="color: var(--orange);">10. Báo cáo Khoản Vay</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-vitien')" style="color: var(--orange);">11. Sổ Quỹ</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-taichinh')" style="color: var(--orange);">12. Báo Cáo Tài Chính</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-history-log')" style="color: var(--orange);">13. Nhật Ký Hệ Thống</button>
+        <button class="nav-btn" id="nav-admin" onclick="openTab(event, 'tab-admin')" style="color:#d93025;">⚙ Quản trị tài khoản</button>
+		<button class="nav-btn" onclick="openChangePassword()">Đổi mật khẩu</button>
+		<button class="nav-btn logout-btn" onclick="logoutAccount()">↪ Đăng xuất tài khoản</button>
+		<div id="admin-data-tools" class="admin-data-tools">
+            <p>Quản trị viên</p>
+            <button class="btn-small btn-outline" onclick="backupDatabase()">Sao lưu dữ liệu (JSON)</button>
+            <button class="btn-small btn-outline" onclick="restoreDatabase()">Khôi phục từ file</button>
+            <button id="btn_undo" class="btn-small btn-undo" onclick="undoAction()">Hoàn tác khôi phục</button>
+            <button class="btn-small btn-reset-data" onclick="checkSecurity('XÓA VĨNH VIỄN DỮ LIỆU', pin => resetData(pin))">Xóa Data Hệ Thống</button>
+        </div>
+    </div>
+	<div id="change-password-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="change-password-title">
+		<div class="password-modal">
+			<div class="password-modal-header"><div><h2 id="change-password-title">Đổi mật khẩu</h2><p>Đặt mật khẩu mới để bảo vệ tài khoản của bạn.</p></div><button class="modal-close" onclick="closeChangePassword()" aria-label="Đóng">×</button></div>
+			<div class="password-form-grid">
+				<div class="form-group password-current"><label for="password_current">Mật khẩu hiện tại</label><input id="password_current" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu hiện tại"></div>
+				<div class="form-group"><label for="password_new">Mật khẩu mới</label><input id="password_new" type="password" autocomplete="new-password" placeholder="Tối thiểu 8 ký tự"></div>
+				<div class="form-group"><label for="password_confirm">Xác nhận mật khẩu mới</label><input id="password_confirm" type="password" autocomplete="new-password" placeholder="Nhập lại mật khẩu mới"></div>
+			</div>
+			<p class="password-help">Dùng ít nhất 8 ký tự; nên kết hợp chữ hoa, chữ thường, số và ký tự đặc biệt.</p>
+			<p id="change-password-error" class="form-error" role="alert"></p>
+			<div class="password-modal-actions"><button class="btn-cancel" onclick="closeChangePassword()">Hủy</button><button class="btn-main password-submit" onclick="changePassword()">Cập nhật mật khẩu</button></div>
+		</div>
+	</div>

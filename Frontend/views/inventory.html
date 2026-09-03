@@ -1,0 +1,61 @@
+        <div id="tab-tonkho" class="module">
+            <div class="card" style="border-top:4px solid #1a73e8;">
+                <div class="card-header"><h2>Quản lý kho theo tháng</h2></div>
+                <div class="filter-bar"><b>Tháng/Năm báo cáo:</b><select id="f_month_inventory" class="f-select" onchange="syncInventoryPeriod('report')"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select><select id="f_year_inventory" class="f-select" onchange="syncInventoryPeriod('report')"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                <div class="grid-2"><div id="inventory_material_summary"></div><div id="inventory_product_summary"></div></div>
+            </div>
+            <div class="card" style="border-top:4px solid #9334e6;"><div class="card-header"><h2 id="inventory_monthly_list_title">Danh sách biến động kho theo tháng</h2></div><div style="max-height:360px; overflow-y:auto;"><table><thead><tr><th>Ngày</th><th>Loại biến động</th><th>Hàng hóa / Vật tư</th><th>Số lượng</th><th>Khách hàng / Nguồn</th><th>Doanh thu</th></tr></thead><tbody id="table_inventory_monthly"></tbody></table></div></div>
+            <div class="card">
+                <div class="card-header"><h2>Kho Ấn Phẩm (Thành Phẩm Bán)</h2></div>
+                <div class="filter-bar"><input type="text" id="search_ap" placeholder="Tìm ấn phẩm..." style="width:300px;" oninput="renderTonKho()"></div>
+                <table>
+                    <thead><tr><th>Tên Bài In / Ấn Phẩm</th><th>Số lượng tồn</th><th>Giá vốn ước tính / SP</th><th>Trạng thái</th></tr></thead>
+                    <tbody id="table_anpham"></tbody>
+                </table>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2>Kho Vật Tư (Màng, Kẽm, Khuôn cũ...)</h2></div>
+                <div class="filter-bar">
+                    <input type="text" id="search_vt" placeholder="Tìm vật tư..." style="width:300px;" oninput="renderTonKho()">
+                    <button class="btn-small" style="background:#111; color:#fff;" onclick="moFormNhapVT()">+ Nhập Kho Lẻ Vật Tư</button>
+                </div>
+                <div id="form_nhap_vt" style="display:none; background:#f8f9fa; padding:15px; margin-bottom:15px; border-radius:6px; border:1px solid #ddd;">
+                    <div class="grid-3">
+                        <div><label>Tên Vật Tư</label><input type="text" id="vt_ten" placeholder="VD: Màng Bóng (m)"></div>
+                        <div><label>Số lượng nhập</label><input type="text" class="format-number" id="vt_sl"></div>
+                        <div><label>Mức cảnh báo sắp hết</label><input type="text" class="format-number" id="vt_warn" value="100"></div>
+                    </div>
+                    <button class="btn-small btn-success" style="margin-top:10px;" onclick="nhapVatTu()">Lưu Kho Vật Tư</button>
+                </div>
+                <table>
+					<thead><tr><th>Tên Vật Tư</th><th>Đơn Vị Tính</th><th>Tồn Kho</th><th>Ngưỡng Cảnh Báo</th></tr></thead>
+                    <tbody id="table_vattu"></tbody>
+                </table>
+				<div class="card" style="border-top: 4px solid #f29900; margin-top: 20px;">
+                <div class="card-header"><h2>Lịch Sử Nhập / Xuất Kho Vật Tư (Thẻ Kho)</h2></div>
+                <div class="filter-bar">
+                    <b>Lọc Theo Tháng/Năm: </b>
+                    <select id="f_month_tk" class="f-select" onchange="syncInventoryPeriod('ledger')">
+                        <option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                    </select>
+                    <select id="f_year_tk" class="f-select" onchange="syncInventoryPeriod('ledger')">
+                        <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                    </select>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ngày Giao Dịch</th>
+                                <th>Loại</th>
+                                <th>Tên Vật Tư</th>
+                                <th>Số Lượng</th>
+                                <th>Ghi Chú Nguồn Gốc</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_lichsu_vattu"></tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>

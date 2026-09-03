@@ -1,0 +1,51 @@
+        <div id="tab-danhba" class="module">
+            <div class="card" style="border-top:4px solid #1a73e8;">
+                <div class="card-header"><h2>Danh bạ</h2></div>
+                <div class="fin-tabs"><button class="fin-tab active" data-directory-tab="employees" onclick="switchDirectoryTab('employees')">👥 Nhân viên</button><button class="fin-tab" data-directory-tab="customers" onclick="switchDirectoryTab('customers')">👤 Khách hàng</button><button class="fin-tab" data-directory-tab="suppliers" onclick="switchDirectoryTab('suppliers')">🤝 Đối tác mua hàng</button></div>
+                <div class="birthday-panel"><div class="birthday-panel-header"><div><h3>🎂 Sinh nhật trong tháng</h3><p id="directory_birthday_month"></p></div><button class="btn-small btn-outline" onclick="loadDirectoryBirthdays()">↻ Tải lại</button></div><div id="directory_birthdays" class="birthday-list">Đang tải danh sách sinh nhật…</div></div>
+                <div id="directory_tab_host"></div>
+            </div>
+        </div>
+
+        <div id="tab-nhanvien" class="module">
+            <div class="card directory-form-card" style="border-top:4px solid #9334e6; max-width:1100px;"><div class="card-header"><h2>Danh bạ nhân viên</h2><button class="btn-small btn-outline" onclick="loadDirectory('employees')">↻ Tải lại</button></div>
+                <div class="grid-4 directory-form-grid"><div><label>Họ và tên</label><input id="directory_employee_name" placeholder="Nguyễn Văn A"></div><div><label>Ngày sinh</label><input type="date" id="directory_employee_date_of_birth"></div><div><label>Số điện thoại</label><input id="directory_employee_phone" placeholder="09xx..."></div><div><label>Chức vụ</label><input id="directory_employee_position" placeholder="Kế toán, In ấn..."></div></div>
+                <button id="directory_employees_save" class="btn-main directory-save" onclick="saveDirectory('employees')">LƯU NHÂN VIÊN</button><button id="directory_employees_cancel" class="btn-small btn-outline" style="display:none; margin-left:8px;" onclick="cancelDirectoryEdit('employees')">HỦY SỬA</button></div>
+            <div class="card"><table><thead><tr><th>Mã NV</th><th>Họ tên</th><th>Ngày sinh</th><th>Liên hệ</th><th>Chức vụ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody id="directory_employees_table"></tbody></table></div>
+        </div>
+
+        <div id="tab-khachhang" class="module">
+            <div class="card directory-form-card" style="border-top:4px solid #1a73e8; max-width:1100px;"><div class="card-header"><h2>Danh bạ khách hàng</h2><button class="btn-small btn-outline" onclick="loadDirectory('customers')">↻ Tải lại</button></div>
+                <div class="grid-3 directory-form-grid"><div><label>Tên khách hàng</label><input id="directory_customer_name" placeholder="Họ và tên khách hàng"></div><div><label>Ngày tháng năm sinh</label><input type="date" id="directory_customer_date_of_birth"></div><div><label>Số điện thoại</label><input id="directory_customer_phone" inputmode="tel" placeholder="09xx..."></div></div>
+                <button id="directory_customers_save" class="btn-main directory-save" onclick="saveDirectory('customers')">LƯU KHÁCH HÀNG</button><button id="directory_customers_cancel" class="btn-small btn-outline" style="display:none; margin-left:8px;" onclick="cancelDirectoryEdit('customers')">HỦY SỬA</button></div>
+            <div class="card"><table><thead><tr><th>Mã KH</th><th>Tên khách hàng</th><th>Ngày sinh</th><th>Số điện thoại</th><th>Thao tác</th></tr></thead><tbody id="directory_customers_table"></tbody></table></div>
+        </div>
+
+        <div id="tab-doitac" class="module">
+            <div class="card directory-form-card" style="border-top:4px solid #f29900; max-width:1100px;"><div class="card-header"><h2>Danh bạ đối tác mua hàng / nhà cung cấp</h2><button class="btn-small btn-outline" onclick="loadDirectory('suppliers')">↻ Tải lại</button></div>
+                <div class="grid-3 directory-form-grid"><div><label>Tên NCC</label><input id="directory_supplier_name" placeholder="Tên nhà cung cấp"></div><div><label>Loại gia công</label><select id="directory_supplier_processing_type"><option value="">-- Chọn loại gia công --</option><option value="Nhà in">Nhà in</option><option value="Nhà giấy">Nhà giấy</option><option value="Nhà gia công">Nhà gia công</option></select></div><div><label>Người liên hệ</label><input id="directory_supplier_contact_name" placeholder="Họ và tên người liên hệ"></div><div><label>Ngày sinh người liên hệ</label><input type="date" id="directory_supplier_contact_date_of_birth"></div><div><label>Số điện thoại</label><input id="directory_supplier_phone" inputmode="tel" placeholder="09xx..."></div></div>
+                <button id="directory_suppliers_save" class="btn-main directory-save" onclick="saveDirectory('suppliers')">LƯU NHÀ CUNG CẤP</button><button id="directory_suppliers_cancel" class="btn-small btn-outline" style="display:none; margin-left:8px;" onclick="cancelDirectoryEdit('suppliers')">HỦY SỬA</button></div>
+            <div class="card"><table><thead><tr><th>Mã NCC</th><th>Tên NCC</th><th>Loại gia công</th><th>Người liên hệ</th><th>Ngày sinh</th><th>Số điện thoại</th><th>Thao tác</th></tr></thead><tbody id="directory_suppliers_table"></tbody></table></div>
+        </div>
+
+        <div id="tab-admin" class="module">
+            <div class="card admin-account-form" style="max-width:none; width:100%; border-top:4px solid #d93025;">
+                <div class="card-header"><h2>Quản trị tài khoản nhân viên</h2></div>
+                <p style="margin-bottom:15px;color:#666;">Chỉ ADMIN được tạo, đổi role, đặt lại mật khẩu hoặc khóa tài khoản.</p>
+                <div class="grid-2"><div><label>Nhân viên</label><select id="admin_employee_id"><option value="">Không liên kết hồ sơ</option></select></div><div><label>Role</label><select id="admin_role"><option value="SALE">SALE - Bán hàng</option><option value="DESIGNER">DESIGNER - Kế hoạch/SX</option><option value="WORKER">WORKER - Sản xuất</option><option value="THUQUY">THUQUY - Sổ quỹ</option><option value="ACCOUNTANT">ACCOUNTANT - Kế toán</option><option value="OTHER">OTHER - Không cấp quyền</option><option value="ADMIN">ADMIN - Quản trị</option></select></div></div>
+                <div style="margin-top:15px;"><label>Module được sử dụng</label><div id="admin_modules" class="grid-3" style="padding:12px;background:#f8f9fa;border:1px solid #ddd;border-radius:6px;"><label class="check-luong"><input type="checkbox" value="planning"> 1. Lập kế hoạch / Lệnh SX</label><label class="check-luong"><input type="checkbox" value="kanban"> 2. Tiến độ Kanban</label><label class="check-luong"><input type="checkbox" value="inventory"> 3. Báo cáo tồn kho</label><label class="check-luong"><input type="checkbox" value="directory"> 4. Danh bạ</label><label class="check-luong"><input type="checkbox" value="sales"> 5. Xuất bán hàng</label><label class="check-luong"><input type="checkbox" value="debts"> 6. Công nợ</label><label class="check-luong"><input type="checkbox" value="production_dashboard"> 7. Dashboard sản xuất</label><label class="check-luong"><input type="checkbox" value="payroll"> 8. Lương & KPI</label><label class="check-luong"><input type="checkbox" value="assets"> 9. Tài sản</label><label class="check-luong"><input type="checkbox" value="loans"> 10. Khoản vay</label><label class="check-luong"><input type="checkbox" value="wallet"> 11. Sổ quỹ</label><label class="check-luong"><input type="checkbox" value="finance"> 12. Báo cáo tài chính</label><label class="check-luong"><input type="checkbox" value="history"> 13. Nhật ký hệ thống</label></div></div>
+                <div class="grid-2" style="margin-top:12px;"><div><label>Tên đăng nhập</label><input id="admin_username" type="text" autocomplete="off" placeholder="vd: nguyenvana"></div><div><label>Mật khẩu ban đầu</label><input id="admin_password" type="password" autocomplete="new-password" placeholder="Ít nhất 8 ký tự"></div></div>
+                <button class="btn-main" onclick="createEmployeeAccount()">TẠO TÀI KHOẢN NHÂN VIÊN</button>
+            </div>
+            <div class="card"><div class="card-header"><h2>Danh sách tài khoản</h2><button class="btn-small btn-outline" onclick="loadAdminAccounts()">↻ Tải lại</button></div><table><thead><tr><th>Tên đăng nhập</th><th>Role</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead><tbody id="admin_users_table"></tbody></table></div>
+            <div class="card admin-account-form admin-pin-card">
+                <div class="card-header"><div><h2>Mã PIN quản trị</h2><p id="admin_pin_status" class="admin-pin-status">Đang kiểm tra trạng thái mã PIN…</p></div></div>
+                <p class="admin-pin-note">PIN dùng để xác minh các thao tác quản trị nhạy cảm. PIN chỉ gồm 4–12 chữ số và được mã hóa khi lưu trong MySQL.</p>
+                <div class="grid-3">
+                    <div id="admin_pin_current_group"><label>Mã PIN hiện tại</label><input id="admin_pin_current" type="password" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Nhập PIN hiện tại"></div>
+                    <div><label>Mã PIN mới</label><input id="admin_pin_new" type="password" inputmode="numeric" autocomplete="new-password" maxlength="12" placeholder="4–12 chữ số"></div>
+                    <div><label>Xác nhận mã PIN mới</label><input id="admin_pin_confirm" type="password" inputmode="numeric" autocomplete="new-password" maxlength="12" placeholder="Nhập lại PIN mới"></div>
+                </div>
+                <button id="admin_pin_submit" class="btn-main" onclick="saveAdminPin()">Lưu mã PIN</button>
+            </div>
+        </div>

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="CSS/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Phạm Khôi - V11.1 (Tích Hợp Lương & Auto Tài Chính)</title>
+    
+</head>
+<body>
+	<div id="print_receipt_area" style="display:none; font-family: 'Times New Roman', serif; line-height: 1.5; color:#000;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="margin:0; font-size: 24px; text-transform: uppercase;" id="prt_title">PHIẾU THU TIỀN</h2>
+        <p style="margin:5px 0 0 0; font-style: italic;" id="prt_date">Ngày ... tháng ... năm ...</p>
+    </div>
+    <table style="width: 100%; border: none; font-size: 16px;">
+        <tr><td style="width: 150px; padding: 5px 0;"><b>Họ, tên người nộp/nhận:</b></td><td id="prt_name" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+        <tr><td style="padding: 5px 0;"><b>Lý do:</b></td><td id="prt_reason" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+        <tr><td style="padding: 5px 0;"><b>Số tiền:</b></td><td style="padding: 5px 0; border-bottom: 1px dotted #ccc;"><b id="prt_amount"></b> VNĐ</td></tr>
+        <tr><td style="padding: 5px 0;"><b>Nguồn quỹ (Ví):</b></td><td id="prt_wallet" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+        <tr><td style="padding: 5px 0;"><b>Hạng mục:</b></td><td id="prt_category" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
+    </table>
+    <div style="display: flex; justify-content: space-between; margin-top: 40px; text-align: center;">
+        <div style="width: 30%;"><b>Người lập phiếu</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
+        <div style="width: 30%;"><b>Người nộp/nhận</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
+        <div style="width: 30%;"><b>Giám đốc (Sếp)</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
+    </div>
+</div>
+	<div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 350px;">
+        <h1 style="font-size: 20px; margin-bottom: 10px;">PHẠM KHÔI ERP</h1>
+        <p style="color: #666; margin-bottom: 25px; font-size: 14px;">Đăng nhập bằng tài khoản được quản trị viên cấp</p>
+        <input type="text" id="username-input" autocomplete="username" placeholder="Tên đăng nhập"
+            style="width: 100%; padding: 13px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
+        <input type="password" id="password-input" autocomplete="current-password" placeholder="Mật khẩu"
+            style="width: 100%; padding: 13px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
+        
+        <button onclick="verifyLogin()" 
+            style="width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">
+            MỞ KHÓA HỆ THỐNG
+        </button>
+        
+        <p id="login-error" style="color: red; font-size: 13px; margin-top: 15px; display: none;">❌ Mã PIN không chính xác!</p>
+    </div>
+    <p style="margin-top: 20px; color: #999; font-size: 12px;">© 2026 Bao Bì Giấy Phạm Khôi</p>
+</div>
+    <datalist id="list-ncc"></datalist>
+    <datalist id="list-kho"><option value="43x32.5"></option><option value="65x43"></option><option value="65x86"></option><option value="79x54"></option><option value="79x109"></option></datalist>
+<div class="mobile-header">
+    <h1 style="margin: 0; font-size: 18px; color: #1a73e8;">PHẠM KHÔI ERP</h1>
+    <button onclick="toggleMobileMenu()" style="background: none; border: none; font-size: 24px; padding: 0; cursor: pointer;">☰</button>
+</div>
+    <div class="sidebar" id="mySidebar">
+        <h1>Phạm Khôi ERP</h1>
+        <button class="nav-btn active" onclick="openTab(event, 'tab-kehoach')">1. Lập Kế Hoạch / Lệnh SX</button>
+        <button class="nav-btn" id="btn_nav_kanban" onclick="openTab(event, 'tab-sanxuat')">2. Tiến Độ KANBAN</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-tonkho')">3. Báo cáo Tồn Kho</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-danhba')">📇 Danh bạ</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-banhang')">4. Xuất Bán Hàng</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-congno')">5. Sổ Cái Công Nợ (VAT)</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-baocao')">6. Dashboard Sản Xuất</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-luong')" style="color: var(--orange); font-weight: bold;">7. Báo cáo Lương & KPI</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-taisan')" style="color: var(--orange); font-weight: bold;">8. Báo cáo Tài Sản (Khấu hao)</button>
+        <button class="nav-btn" onclick="openTab(event, 'tab-khoanvay')" style="color: var(--orange); font-weight: bold;">9. Báo cáo Khoản Vay</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-vitien')" style="color: var(--orange); font-weight: bold;">10. Sổ Quỹ</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-taichinh')" style="color: var(--orange); font-weight: bold;">11. Báo Cáo Tài Chính</button>
+		<button class="nav-btn" onclick="openTab(event, 'tab-history-log')" style="color: var(--orange); font-weight: bold;">12. Nhật Ký Hệ Thống</button>
+        <button class="nav-btn" id="nav-admin" onclick="openTab(event, 'tab-admin')" style="color:#d93025; font-weight:bold;">⚙ Quản trị tài khoản</button>
+		<button class="nav-btn logout-btn" onclick="logoutAccount()">↪ Đăng xuất tài khoản</button>
+		<button class="nav-btn" style="margin-top: auto; color: #d93025; font-size: 12px; text-align: center;" onclick="checkSecurity('XÓA VĨNH VIỄN DỮ LIỆU', () => resetData())">⚠ Xóa Data Hệ Thống</button>
+				<div style="margin-top: 20px; padding: 10px; border-top: 2px solid #ddd;">
+    <p style="font-size: 11px; font-weight: bold; color: #666; margin-bottom: 5px;">🛠 QUẢN TRỊ VIÊN</p>
+    <button class="btn-small btn-outline" onclick="backupDatabase()" style="width: 100%; margin-bottom: 5px;">💾 Backup Data (JSON)</button>
+    <button class="btn-small btn-outline" onclick="restoreDatabase()" style="width: 100%;">📥 Restore Data</button>
+<button id="btn_undo" class="nav-btn" onclick="undoAction()" style="color: #d93025; border: 1px dashed #d93025; margin-top: 10px; font-weight: bold;">↩️ HOÀN TÁC (UNDO)</button>	
+</div>
+    </div>
+
+    <div class="main-content">
+        <div id="tab-kehoach" class="module active">
+            <div class="card" style="max-width: 1200px;">
+                <div class="card-header" style="border: none; padding-bottom: 0;">
+                    <h2>Lập Phiếu Sản Xuất / Thương Mại <span id="draft_notice_kh" class="draft-notice">Đã khôi phục dữ liệu nháp...</span></h2>
+                </div>
+                <div class="grid-3" style="margin-top: 15px;">
+                    <div class="form-group"><label>Ngày lập</label><input type="date" id="kh_ngay"></div>
+                    <div class="form-group"><label>Deadline Giao Khách</label><input type="date" id="kh_deadline"></div>
+                    <div class="form-group"><label>Tên Đơn Hàng (Ghi chú)</label><input type="text" id="kh_ten" placeholder="VD: Hộp Giấy Trà Oolong"></div>
+                </div>
+                <div class="form-group">
+                    <label>TÊN BÀI IN (Bắt buộc - Tên Thành Phẩm sẽ nhập kho)</label>
+                    <input type="text" id="kh_anpham" placeholder="Nhập tên bài in..." style="background: #e6f4ea; border-color: #1e8e3e; font-weight:bold; font-size:16px;">
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="loai_phieu" value="thuongmai" onchange="toggleLoaiPhieu()" checked> Phiếu Thương Mại (Chỉ Mua Đi Bán Lại)</label>
+                    <label><input type="radio" name="loai_phieu" value="sanxuat" onchange="toggleLoaiPhieu()"> Phiếu Sản Xuất (Lập Lệnh In & Gia công lên Kanban)</label>
+                </div>
+                <div id="form_thuongmai">
+                    <div class="grid-4" style="align-items: flex-end;">
+                        <div class="form-group"><label>Nhà Cung Cấp</label><input type="text" id="tm_ncc" list="list-ncc" placeholder="Nhập tên NCC"></div>
+                        <div class="form-group"><label>Số Lượng Nhập</label><input type="text" class="format-number" id="tm_sl" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <div class="form-group"><label>Đơn Giá (Chưa VAT)</label><input type="text" class="format-number" id="tm_gia" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+                            <label class="vat-box"><input type="checkbox" id="tm_vat" onchange="tinhTongTienPhieu()"> + VAT 8%</label>
+                            <div style="flex:1"><label>Tổng Tiền</label><input type="text" id="tm_thanh" readonly style="background:#f1f3f4; font-weight:bold; color:#d93025"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="form_sanxuat" style="display: none;">
+                    <h3>I. VẬT TƯ GIẤY</h3>
+                    <div class="grid-4" style="align-items: flex-end;">
+                        <div class="form-group"><label>Nhà Cung Cấp Giấy</label><input type="text" id="sx_giay_ncc" list="list-ncc" placeholder="Cty Giấy..."></div>
+                        <div class="form-group"><label>Loại Giấy</label><input type="text" id="sx_giay_loai" placeholder="Couche, Duplex..."></div>
+                        <div class="form-group"><label>Khổ Giấy</label><input type="text" list="list-kho" id="sx_giay_kho" placeholder="Chọn khổ"></div>
+                        <div class="form-group"><label>Số lượng (tờ)</label><input type="text" class="format-number" id="sx_giay_sl" value="0" oninput="tinhTongTienPhieu()"></div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:15px; align-items:center;">
+                        <div style="width:200px;"><label>Đơn Giá (Chưa VAT)</label><input type="text" class="format-number" id="sx_giay_gia" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <label class="vat-box"><input type="checkbox" id="sx_giay_vat" onchange="tinhTongTienPhieu()"> + VAT 8%</label>
+                        <div style="width:200px;"><label>Tổng Tiền Giấy</label><input type="text" id="sx_giay_thanh" readonly style="background:#f1f3f4; font-weight:bold; color:#d93025"></div>
+                    </div>
+                    <h3 style="margin-top:20px;">II. MÁY IN</h3>
+                    <div class="grid-4" style="align-items: flex-end;">
+                        <div class="form-group"><label>Xưởng In</label><input type="text" id="sx_in_ncc" list="list-ncc" placeholder="Xưởng in..."></div>
+                        <div class="form-group"><label>Loại Máy In</label><select id="sx_in_may"><option>4 Màu</option><option>1 Màu</option></select></div>
+                        <div class="form-group"><label>Khổ In</label><input type="text" list="list-kho" id="sx_in_kho" placeholder="Chọn khổ"></div>
+                        <div class="form-group"><label>Số lượng (lượt in)</label><input type="text" class="format-number" id="sx_in_sl" value="0" oninput="tinhTongTienPhieu()"></div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:15px; align-items:center;">
+                        <div style="width:200px;"><label>Đơn Giá (Chưa VAT)</label><input type="text" class="format-number" id="sx_in_gia" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <label class="vat-box"><input type="checkbox" id="sx_in_vat" onchange="tinhTongTienPhieu()"> + VAT 8%</label>
+                        <div style="width:200px;"><label>Tổng Tiền In</label><input type="text" id="sx_in_thanh" readonly style="background:#f1f3f4; font-weight:bold; color:#d93025"></div>
+                    </div>
+                    <h3 style="margin-top:20px;">III. GIA CÔNG SAU IN</h3>
+                    <div id="list_giacong"></div>
+                    <button class="btn-outline" onclick="addGiaCongRow()">+ Thêm công đoạn Gia Công</button>
+                </div>
+                <div class="total-price-box">Tổng Nợ Phải Trả NCC (Đã Gồm VAT): <span id="hienthi_tongtien">0</span> đ</div>
+                <button class="btn-main" onclick="saveKeHoach()">LƯU PHIẾU & ĐẨY LỆNH SẢN XUẤT</button>
+            </div>
+            <div class="filter-bar">
+                <b>Tháng/Năm Lọc: </b>
+                <select id="f_month_kh" class="f-select" onchange="renderKeHoach()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_kh" class="f-select" onchange="renderKeHoach()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <input type="text" id="search_kh" placeholder="Tìm Mã SX / Bài in..." style="width:250px; margin-left:15px;" oninput="renderKeHoach()">
+            </div>
+            <div class="split-view">
+                <div class="split-left" style="flex: 1.2;">
+                    <h3>Danh Sách Các Lệnh Gần Đây</h3>
+                    <table>
+						<thead><tr><th>Ngày</th><th>Mã SX / Tên Bài In</th><th>Deadline</th><th>Tổng Tiền</th><th>Trạng Thái</th></tr></thead>
+                        <tbody id="table_kehoach"></tbody>
+                    </table>
+                </div>
+                <div class="split-right" id="kh_detail_viewer" style="flex: 1.8;">
+                    <div style="text-align:center; color:#999; margin-top:50px;"><i>Bấm vào một phiếu bên trái để xem chi tiết.</i></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-sanxuat" class="module">
+            <div class="filter-bar">
+                <b>Bộ lọc Kanban Tháng: </b>
+                <select id="f_month_sx" class="f-select" onchange="renderSanXuat()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_sx" class="f-select" onchange="renderSanXuat()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <span style="margin-left:20px; font-size:13px; color:#1e8e3e"><i>*Kéo thả thẻ để cập nhật trạng thái.</i></span>
+            </div>
+            <div class="kanban-board">
+                <div class="kanban-col" id="col-dangin" ondrop="drop(event, 'Đang in')" ondragover="allowDrop(event)">
+                    <h3 style="color:#1a73e8;">⚙️ Đang In / Chờ In</h3><div id="list-dangin" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+                <div class="kanban-col" id="col-danggiacong" ondrop="drop(event, 'Đang gia công')" ondragover="allowDrop(event)">
+                    <h3 style="color:#f29900;">✂️ Đang Gia Công</h3><div id="list-danggiacong" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+                <div class="kanban-col" id="col-hoanthanh" ondrop="drop(event, 'Hoàn thành')" ondragover="allowDrop(event)">
+                    <h3 style="color:#1e8e3e;">📦 Hoàn Thành (Vào Kho)</h3><div id="list-hoanthanh" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-tonkho" class="module">
+            <div class="card" style="border-top:4px solid #1a73e8;">
+                <div class="card-header"><h2>Quản lý kho theo tháng</h2></div>
+                <div class="filter-bar"><b>Tháng/Năm báo cáo:</b><select id="f_month_inventory" class="f-select" onchange="syncInventoryPeriod('report')"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select><select id="f_year_inventory" class="f-select" onchange="syncInventoryPeriod('report')"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                <div class="grid-2"><div id="inventory_material_summary"></div><div id="inventory_product_summary"></div></div>
+            </div>
+            <div class="card" style="border-top:4px solid #9334e6;"><div class="card-header"><h2 id="inventory_monthly_list_title">Danh sách biến động kho theo tháng</h2></div><div style="max-height:360px; overflow-y:auto;"><table><thead><tr><th>Ngày</th><th>Loại biến động</th><th>Hàng hóa / Vật tư</th><th>Số lượng</th><th>Khách hàng / Nguồn</th><th>Doanh thu</th></tr></thead><tbody id="table_inventory_monthly"></tbody></table></div></div>
+            <div class="card">
+                <div class="card-header"><h2>Kho Ấn Phẩm (Thành Phẩm Bán)</h2></div>
+                <div class="filter-bar"><input type="text" id="search_ap" placeholder="Tìm ấn phẩm..." style="width:300px;" oninput="renderTonKho()"></div>
+                <table>
+                    <thead><tr><th>Tên Bài In / Ấn Phẩm</th><th>Số lượng tồn</th><th>Giá vốn ước tính / SP</th><th>Trạng thái</th></tr></thead>
+                    <tbody id="table_anpham"></tbody>
+                </table>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2>Kho Vật Tư (Màng, Kẽm, Khuôn cũ...)</h2></div>
+                <div class="filter-bar">
+                    <input type="text" id="search_vt" placeholder="Tìm vật tư..." style="width:300px;" oninput="renderTonKho()">
+                    <button class="btn-small" style="background:#111; color:#fff;" onclick="moFormNhapVT()">+ Nhập Kho Lẻ Vật Tư</button>
+                </div>
+                <div id="form_nhap_vt" style="display:none; background:#f8f9fa; padding:15px; margin-bottom:15px; border-radius:6px; border:1px solid #ddd;">
+                    <div class="grid-3">
+                        <div><label>Tên Vật Tư</label><input type="text" id="vt_ten" placeholder="VD: Màng Bóng (m)"></div>
+                        <div><label>Số lượng nhập</label><input type="text" class="format-number" id="vt_sl"></div>
+                        <div><label>Mức cảnh báo sắp hết</label><input type="text" class="format-number" id="vt_warn" value="100"></div>
+                    </div>
+                    <button class="btn-small btn-success" style="margin-top:10px;" onclick="nhapVatTu()">Lưu Kho Vật Tư</button>
+                </div>
+                <table>
+					<thead><tr><th>Tên Vật Tư</th><th>Đơn Vị Tính</th><th>Tồn Kho</th><th>Ngưỡng Cảnh Báo</th></tr></thead>
+                    <tbody id="table_vattu"></tbody>
+                </table>
+				<div class="card" style="border-top: 4px solid #f29900; margin-top: 20px;">
+                <div class="card-header"><h2>Lịch Sử Nhập / Xuất Kho Vật Tư (Thẻ Kho)</h2></div>
+                <div class="filter-bar">
+                    <b>Lọc Theo Tháng/Năm: </b>
+                    <select id="f_month_tk" class="f-select" onchange="syncInventoryPeriod('ledger')">
+                        <option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                    </select>
+                    <select id="f_year_tk" class="f-select" onchange="syncInventoryPeriod('ledger')">
+                        <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                    </select>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ngày Giao Dịch</th>
+                                <th>Loại</th>
+                                <th>Tên Vật Tư</th>
+                                <th>Số Lượng</th>
+                                <th>Ghi Chú Nguồn Gốc</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_lichsu_vattu"></tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div id="tab-banhang" class="module">
+            <div class="card">
+                <div class="card-header" style="border: none; padding-bottom: 0;">
+                    <h2>Lập Lệnh Bán Hàng <span id="draft_notice_bh" class="draft-notice">Đã khôi phục dữ liệu nháp...</span></h2>
+                </div>
+                <div class="grid-4" style="margin-top: 15px;">
+                    <div class="form-group"><label>Ngày Bán</label><input type="date" id="bh_ngay"></div>
+                    <div class="form-group"><label>Khách hàng</label><select id="bh_customer_directory" onchange="selectSalesCustomer(this.value)"><option value="">— Chọn từ Danh bạ (không bắt buộc) —</option></select><input type="text" id="bh_kh" placeholder="Hoặc tự nhập tên khách hàng" style="margin-top:8px;" oninput="clearSalesDirectorySelection()"></div>
+                    <div class="form-group"><label>Bài In Xuất Bán</label><select id="bh_anpham" onchange="tinhLoiNhuanBanHang()"></select></div>
+					<div class="form-group"><label>Tiền sẽ thu vào Ví</label>
+					<select id="bh_wallet" style="border-color:#1e8e3e; font-weight:bold;">
+					<option value="TIENMAT">💵 Tiền Mặt</option>
+					<option value="THIENLONG">💳 Bank Thiên Long</option>
+					<option value="ACB">💳 Bank ACB</option>
+					</select>
+</div>
+                </div>
+                <div class="grid-3">
+                    <div class="form-group"><label>Số Lượng Bán</label><input type="text" class="format-number" id="bh_sl" value="0" oninput="tinhLoiNhuanBanHang()"></div>
+                    <div class="form-group"><label>Doanh Thu (Chưa VAT)</label><input type="text" class="format-number" id="bh_tien" value="0" oninput="tinhLoiNhuanBanHang()"></div>
+                    <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+                        <label class="vat-box"><input type="checkbox" id="bh_vat" onchange="tinhLoiNhuanBanHang()"> + VAT 8%</label>
+                        <div style="flex:1"><label>Khách Phải Trả</label><input type="text" id="bh_tongthu" readonly style="background:#f1f3f4; font-weight:bold; color:#1a73e8"></div>
+                    </div>
+                </div>
+                <div class="grid-2" style="background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #ddd; margin-bottom: 15px;">
+                    <div><label>Tổng Giá Vốn Tính Từ Lệnh Sản Xuất:</label><div id="bh_giavon_view" style="font-weight:bold; color:#5f6368; font-size:16px;">0 đ</div></div>
+                    <div><label>LỢI NHUẬN (TRÊN DOANH THU THUẦN):</label><div id="bh_loinhuan_view" style="font-weight:bold; color:#1e8e3e; font-size:22px;">0 đ</div></div>
+                </div>
+                <button class="btn-main" onclick="saveBanHang()">XUẤT KHO & LƯU DOANH THU</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Bán Hàng</h2></div>
+                <div class="filter-bar">
+                    <select id="f_month_bh" class="f-select" onchange="renderBanHang()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                    <select id="f_year_bh" class="f-select" onchange="renderBanHang()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                    <input type="text" id="search_bh" placeholder="Tìm khách hàng..." style="width:200px; margin-left:15px;" oninput="renderBanHang()">
+                </div>
+                <table>
+                    <thead><tr><th>Ngày</th><th>Khách Hàng</th><th>Bài In Bán</th><th>Số Lượng</th><th>Thuần (Chưa VAT)</th><th>Thực Thu</th><th>Lợi Nhuận</th></tr></thead>
+                    <tbody id="table_banhang"></tbody>
+                </table>
+            </div>
+        </div>
+
+       <div id="tab-congno" class="module">
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-header" style="margin-bottom: 0; padding-bottom: 0; border: none;">
+                    <h2>Báo cáo Danh Mục Nhà Cung Cấp</h2>
+                    <button class="btn-small" style="background:#f29900; color:#fff;" onclick="moFormAddNCC()">+ Thêm / Báo cáo NCC</button>
+                </div>
+                <div id="box_manage_ncc" style="display:none; background:#fef7e0; padding:15px; border-radius:6px; margin-top:15px; border:1px solid #fce8e6;">
+                    <div style="display:flex; gap:10px; align-items:flex-end;">
+                        <div style="flex:1"><label>Nhập Tên Nhà Cung Cấp Mới</label><input type="text" id="new_ncc_name" placeholder="VD: Cty Bao Bì D..."></div>
+                        <button class="btn-small btn-success" style="padding:10px 15px;" onclick="addNCCManual()">Lưu NCC</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-bar"><input type="text" id="search_cn" placeholder="Tìm tên nhà cung cấp..." style="width:300px;" oninput="renderCongNo()"></div>
+            
+            <div class="split-view">
+                <div class="split-left">
+                    <h3>Tổng Nợ Theo NCC</h3>
+                    <table>
+                        <thead><tr><th>Nhà Cung Cấp</th><th>Tổng Nợ Còn Lại</th></tr></thead>
+                        <tbody id="table_congno"></tbody>
+                    </table>
+                </div>
+                <div class="split-right" id="cn_detail_viewer">
+                    <div style="text-align:center; color:#999; margin-top:50px;"><i>Bấm vào một NCC bên trái để đối chiếu theo từng Mã SX.</i></div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 20px; border-top: 4px solid #1a73e8;">
+                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="margin:0;">Lịch Sử Chi Trả Công Nợ NCC</h2>
+                    <div class="filter-bar" style="margin:0; padding:0; border:none; background:transparent;">
+                        <select id="f_month_cn_hs" class="f-select" onchange="renderLichSuThanhToanNCC()">
+                            <option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option>
+                            <option value="04" selected>Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option>
+                            <option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option>
+                            <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                        </select>
+                        <select id="f_year_cn_hs" class="f-select" onchange="renderLichSuThanhToanNCC()">
+                            <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày Thanh Toán</th>
+                                <th>Nhà Cung Cấp</th>
+                                <th>Mã Phiếu</th> <th>Thanh toán Lệnh SX</th>
+                                <th class="text-right">Số Tiền (VNĐ)</th>
+                                <th>Ghi Chú</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_lichsu_thanhtoan_ncc"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+		<div id="tab-baocao" class="module">
+            <div class="filter-bar" style="background: #e8f0fe; border-color: #cce5ff;">
+                <b>Báo Cáo Sản Xuất Tháng: </b>
+                <select id="f_month_bc" class="f-select" onchange="renderBaoCao()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_bc" class="f-select" onchange="renderBaoCao()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <button class="btn-small btn-main" style="margin:0 0 0 auto; width:auto;" onclick="moFormNhatKy()">+ Nhập Nhật Ký Ca SX</button>
+            </div>
+            <div class="grid-5" style="margin-bottom: 20px;">
+                <div class="kpi-card" style="border-left-color: #1a73e8;"><div class="kpi-title">Tiến Độ Lệnh (Tháng)</div><div class="kpi-value" id="kpi_lenh">0 / 0</div><div class="kpi-sub">Lệnh đã xong / Tổng lệnh</div><div class="progress-bg"><div class="progress-bar" id="kpi_lenh_bar" style="width: 0%; background:#1a73e8;"></div></div></div>
+                <div class="kpi-card" style="border-left-color: #1e8e3e;"><div class="kpi-title">Tỷ Lệ Đạt Chuẩn (Yield)</div><div class="kpi-value" id="kpi_yield">0%</div><div class="kpi-sub">Hàng Pass / Tổng sản lượng</div><div class="progress-bg"><div class="progress-bar" id="kpi_yield_bar" style="width: 0%; background:#1e8e3e;"></div></div></div>
+                <div class="kpi-card" style="border-left-color: #f29900;"><div class="kpi-title">Tỷ Lệ Phế Phẩm (Defect)</div><div class="kpi-value" id="kpi_defect" style="color: #d93025;">0%</div><div class="kpi-sub">Hàng lỗi gãy, lệch màu...</div></div>
+                <div class="kpi-card" style="border-left-color: #9334e6;"><div class="kpi-title">Hiệu Suất Máy (OEE)</div><div class="kpi-value" id="kpi_oee">0%</div><div class="kpi-sub">Uptime / Tổng thờigian ca</div><div class="progress-bg"><div class="progress-bar" id="kpi_oee_bar" style="width: 0%; background:#9334e6;"></div></div></div>
+                <div class="kpi-card" style="border-left-color: #ff6d01;"><div class="kpi-title">Tồn Kho Trên Chuyền</div><div class="kpi-value" id="kpi_wip">0</div><div class="kpi-sub">Số lệnh đang in & gia công</div></div>
+            </div>
+            <div class="card" id="box_nhatky" style="display:none; border: 2px solid #1a73e8;">
+                <div class="card-header"><h2 style="color: #1a73e8;">Nhập Nhật Ký Sản Xuất Cuối Ca</h2><button class="btn-small btn-outline" style="margin:0" onclick="document.getElementById('box_nhatky').style.display='none'">Đóng Form</button></div>
+                <div class="grid-4">
+                    <div class="form-group"><label>Ngày báo cáo</label><input type="date" id="nk_date"></div>
+                    <div class="form-group"><label>Ca làm việc</label><select id="nk_ca"><option>Ca 1 (Sáng)</option><option>Ca 2 (Tối)</option><option>Hành chính</option></select></div>
+                    <div class="form-group" style="grid-column: span 2"><label>Thực hiện cho Mã Lệnh SX</label><select id="nk_idSX"></select></div>
+                </div>
+                <h3 style="margin-top:10px;">1. Sản Lượng & Chất Lượng</h3>
+                <div class="grid-3">
+                    <div class="form-group"><label>Mục tiêu ca (Target)</label><input type="text" class="format-number" id="nk_target" value="0"></div>
+                    <div class="form-group"><label>Sản lượng ĐẠT (Pass)</label><input type="text" class="format-number" id="nk_pass" value="0"></div>
+                    <div class="form-group"><label style="color:#d93025">Sản lượng LỖI (Defect)</label><input type="text" class="format-number" id="nk_defect" value="0"></div>
+                </div>
+                <h3 style="margin-top:10px;">2. Máy Móc (Tính OEE) & Nhân Sự</h3>
+                <div class="grid-4">
+                    <div class="form-group"><label>Giờ chạy máy (Uptime)</label><input type="text" class="format-number" id="nk_uptime" value="8"></div>
+                    <div class="form-group"><label>Giờ chết máy (Downtime)</label><input type="text" class="format-number" id="nk_downtime" value="0"></div>
+                    <div class="form-group"><label>Sĩ số công nhân</label><input type="text" class="format-number" id="nk_workers" value="0"></div>
+                    <div class="form-group"><label>Tổng giờ Tăng ca (OT)</label><input type="text" class="format-number" id="nk_ot" value="0"></div>
+                </div>
+                <button class="btn-main" onclick="saveNhatKy()">LƯU BÁO CÁO CA</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Nhật Ký Ca Trong Tháng</h2></div>
+                <table>
+                    <thead><tr><th>Ngày/Ca</th><th>Mã Lệnh SX</th><th>Đạt / Mục tiêu</th><th>Phế phẩm</th><th>Uptime</th><th>Nhân sự</th></tr></thead>
+                    <tbody id="table_baocao"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-luong" class="module">
+            <div class="card">
+                <div class="card-header">
+                    <h2 id="form-luong-title">Thêm / Chỉnh Sửa Nhân Viên</h2>
+                    <input type="hidden" id="ns_id">
+                </div>
+                
+                <div class="grid-4">
+                    <div class="form-group"><label>Tên nhân viên</label><input type="text" id="ns_name" placeholder="Nguyễn Văn A"></div>
+					<div class="form-group"><label>Số điện thoại</label><input type="number" id="ns_phone" placeholder="09xxxxxx"></div>
+                    <div class="form-group"><label>Ngày vào làm</label><input type="date" id="ns_startdate"></div>
+                    <div class="form-group"><label>Vị trí</label><select id="ns_position"></select></div>
+                    <div class="form-group"><label>Cấp bậc</label><select id="ns_level" onchange="toggleFormLuong()"></select></div>
+                </div>
+                
+                <div class="form-group" style="width: 25%;">
+                    <label>Loại hợp đồng</label>
+                    <select id="ns_type" onchange="toggleFormLuong()">
+                        <option value="official">Hợp đồng chính thức</option>
+                        <option value="part-time">Hợp đồng Part-time</option>
+                    </select>
+                </div>
+
+                <div id="ns_form_official" style="background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #ddd; margin-bottom:15px;">
+                    <h3 style="margin-top:0;">Dành cho Hợp Đồng Chính Thức</h3>
+                    <div class="grid-3">
+                        <div class="form-group"><label>P1 - Lương cam kết (VNĐ)</label><input type="text" class="format-number" id="ns_p1" value="0"></div>
+                        <div class="form-group"><label>Thưởng khác (VNĐ)</label><input type="text" class="format-number" id="ns_bonus" value="0"></div>
+                        <div class="form-group"><label>Khấu trừ (Thuế, BHXH...)</label><input type="text" class="format-number" id="ns_deduct" value="0"></div>
+                    </div>
+                    
+                    <div id="ns_box_kpi" style="border-top: 1px dashed #ccc; padding-top:15px; margin-top:10px;">
+                        <label style="color:#1a73e8; font-weight:bold;">P2 - Lương KPI (Chỉ áp dụng Level 2 trở lên)</label>
+                        <div class="grid-2">
+                            <div class="form-group"><label>Doanh thu tháng (VNĐ) để xét KPI</label><input type="text" class="format-number" id="ns_kpi_rev" value="0"></div>
+                            <div class="form-group"><label>% Hoa hồng / Doanh thu</label><input type="number" id="ns_kpi_percent" value="0" step="0.1"></div>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #ccc; padding-top:15px; margin-top:10px;">
+                        <label style="color:#1e8e3e; font-weight:bold;">P3 - Phụ cấp chuyên cần (Check để cộng 200k/mục)</label>
+                        <div class="grid-4" style="margin-top: 10px;">
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_1"> Đi làm đủ ngày</label>
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_2"> Đi làm đúng giờ</label>
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_3"> Tác phong tốt</label>
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_4"> Tập thể tốt</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ns_form_parttime" style="display:none; background:#fef7e0; padding:15px; border-radius:6px; border:1px solid #fce8e6; margin-bottom:15px;">
+                    <h3 style="margin-top:0; color:#d93025;">Dành cho Part-Time</h3>
+                    <div class="grid-3">
+                        <div class="form-group"><label>Lương theo giờ (VNĐ)</label><input type="text" class="format-number" id="ns_pt_rate" value="0"></div>
+                        <div class="form-group"><label>Tổng số giờ làm trong kỳ</label><input type="text" class="format-number" id="ns_pt_hours" value="0"></div>
+                        <div class="form-group"><label>Thưởng/Phạt bù trừ thêm</label><input type="text" class="format-number" id="ns_pt_bonus" value="0"></div>
+                    </div>
+                </div>
+
+                <div class="form-group"><label>Ghi chú trả lương</label><input type="text" id="ns_note" placeholder="Ví dụ: Lương tháng 4..."></div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-main" style="width: auto; padding: 10px 30px;" id="btn-save-ns" onclick="saveNhanVien()">LƯU THÔNG TIN</button>
+                    <button class="btn-outline" style="width: auto; padding: 10px 30px; display:none;" id="btn-cancel-ns" onclick="resetFormNS()">HỦY SỬA</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Danh Sách Nhân Viên & Tính Lương</h2>
+                </div>
+                <div class="filter-bar">
+                    <b>Lọc Chốt Lương Tháng: </b>
+                    <select id="f_month_ns" class="f-select" onchange="renderNhanVien()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                    <select id="f_year_ns" class="f-select" onchange="renderNhanVien()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nhân Viên</th>
+							<th>Số Điện Thoại</th>
+                            <th>Vị Trí / Bậc</th>
+                            <th>Lương Cơ Bản</th>
+                            <th>Thực Nhận (Tạm tính)</th>
+                            <th class="text-center">Trạng Thái / Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_nhanvien"></tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Trả Lương Hệ Thống</h2></div>
+                <table>
+                    <thead>
+                        <tr><th>Ngày Chốt</th><th>Nhân Viên</th><th>Kỳ Lương</th><th>Thực Nhận</th><th>Ghi Chú</th></tr>
+                    </thead>
+                    <tbody id="table_lichsu_luong"></tbody>
+                </table>
+            </div>
+        </div>
+	<div id="tab-vitien" class="module">
+    <div class="card" style="border-top: 5px solid #1e8e3e;">
+        <div class="card-header">
+            <h2 style="color: #1e8e3e;">💰 SỔ QUỸ & VÍ TIỀN TỔNG</h2>
+            <button class="btn-small btn-main" style="background:#1e8e3e; padding:10px 20px; width: auto;" onclick="document.getElementById('form_thu_chi').style.display='block'">+ LẬP PHIẾU GIAO DỊCH MỚI</button>
+        </div>
+        
+        <div class="grid-3" style="margin-top: 15px;">
+            <div style="background: linear-gradient(135deg, #34a853 0%, #1e8e3e 100%); color: white; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 13px; font-weight: bold;">💵 TIỀN MẶT (CASH)</div>
+                <div id="so_du_tienmat" style="font-size: 32px; font-weight: bold; margin-top: 5px;">0 đ</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #1a73e8 0%, #1152c4 100%); color: white; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 13px; font-weight: bold;">💳 BANK THIÊN LONG</div>
+                <div id="so_du_thienlong" style="font-size: 32px; font-weight: bold; margin-top: 5px;">0 đ</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #f29900 0%, #e65100 100%); color: white; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 13px; font-weight: bold;">💳 BANK ACB</div>
+                <div id="so_du_acb" style="font-size: 32px; font-weight: bold; margin-top: 5px;">0 đ</div>
+            </div>
+        </div>
+
+<div id="form_thu_chi" style="display:none; background:#f8f9fa; padding:20px; border:2px solid #1e8e3e; border-radius:8px; margin-top:20px;">
+            <h3 style="color:#1e8e3e; margin-top:0;">Lập Phiếu Giao Dịch</h3>
+            <div class="grid-4">
+                <div class="form-group"><label>Loại Giao Dịch</label>
+                    <select id="tc_loai" onchange="toggleFormChuyenTien()">
+                        <option value="THU">📥 THU TIỀN VÀO</option>
+                        <option value="CHI" selected>📤 CHI TIỀN RA</option>
+                        <option value="CHUYEN">🔄 CHUYỂN NỘI BỘ</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Ngày Giao Dịch</label><input type="date" id="tc_ngay"></div>
+                
+                <div class="form-group"><label>Số Tiền / Thành Tiền (VNĐ)</label>
+                    <input type="text" class="format-number" id="tc_sotien" value="0" oninput="tinhDonGiaVT()">
+                </div>
+                
+                <div class="form-group" id="box_tc_doituong"><label>Họ tên người Nộp / Nhận</label><input type="text" id="tc_doituong" placeholder="Tên NCC/NV..."></div>
+            </div>
+            
+            <div class="grid-3">
+                <div class="form-group"><label>Nguồn Quỹ (Ví)</label>
+                    <select id="tc_vi">
+                        <option value="TIENMAT">💵 Tiền Mặt</option>
+                        <option value="THIENLONG">💳 Bank Thiên Long</option>
+                        <option value="ACB">💳 Bank ACB</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hạng Mục</label>
+                    <select id="tc_hangmuc" onchange="toggleFormNhapKhoLe()">
+                        <option value="Khác">Khác / Không phân loại</option>
+                        <option value="Doanh thu">Doanh thu bán hàng</option>
+                        <option value="Chi phí vận hành">Chi phí vận hành</option>
+                        <option value="Nhập hàng">Thanh toán NCC (Theo Lệnh)</option>
+                        <option value="Mua vật tư lẻ">🛒 Mua Vật Tư Lẻ (Vào thẳng Kho)</option>
+                        <option value="Lương">Thanh toán Lương</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Ghi chú</label><input type="text" id="tc_lydo" placeholder="Lý do chi tiết..."></div>
+            </div>
+
+            <div id="box_tc_nhapkho" style="display:none; background:#e8f0fe; padding:15px; border-radius:6px; margin-top:10px; border:1px solid #1a73e8;">
+                <h4 style="margin:0 0 10px 0; color:#1a73e8;">📦 Chi Tiết Nhập Kho Vật Tư</h4>
+                <div class="grid-4">
+                    <div class="form-group"><label>Tên Vật Tư</label><input type="text" id="tc_vt_ten" placeholder="VD: Băng keo..."></div>
+                    <div class="form-group"><label>Đơn Vị Tính</label><input type="text" id="tc_vt_dvt" placeholder="VD: Cuộn, Kg, Tờ..."></div>
+                    <div class="form-group"><label>Số Lượng Nhập</label><input type="text" class="format-number" id="tc_vt_sl" value="1" oninput="tinhDonGiaVT()"></div>
+                    <div class="form-group"><label>Đơn Giá (VNĐ/ĐVT)</label><input type="text" class="format-number readonly-field" id="tc_vt_gia" readonly placeholder="Hệ thống tự chia"></div>
+                </div>
+                <p style="margin:0; font-size:12px; color:#1e8e3e; font-style:italic;">* Thành tiền nhập kho được liên kết trực tiếp với "Số Tiền" của Phiếu Chi.</p>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-main" style="background:#1e8e3e; flex:1;" onclick="luuPhieuThuChi()">LƯU PHIẾU VÀO SỔ QUỸ</button>
+                <button class="btn-outline" style="flex:0.3;" onclick="document.getElementById('form_thu_chi').style.display='none'">Đóng</button>
+            </div>
+        </div>
+        
+       <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; margin-top: 20px; border-bottom: 2px solid #1e8e3e; padding-bottom: 10px;">
+            <h3 style="margin:0; color:#1e8e3e;">Sổ Chi Tiết Giao Dịch</h3>
+            <div class="filter-bar" style="margin:0; padding:0; border:none; background:transparent;">
+                <select id="f_month_sq" class="f-select" onchange="renderViTien()">
+                    <option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option>
+                    <option value="04" selected>Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option>
+                    <option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option>
+                    <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                </select>
+                <select id="f_year_sq" class="f-select" onchange="renderViTien()">
+                    <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                </select>
+            </div>
+        </div>
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Mã Phiếu</th>
+                    <th style="width: 80px;">Ngày</th>
+                    <th>Nguồn Quỹ</th>
+                    <th>Đối Tượng</th>
+                    <th>Hạng Mục</th>
+                    <th>Ghi chú</th>
+                    <th class="text-right">Số Tiền (VNĐ)</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="table_giao_dich_vi"></tbody>
+        </table>
+    </div>
+</div>
+<div id="tab-taisan" class="module">
+    <datalist id="list-maymoc">
+        <option value="Máy in 4 màu"></option>
+        <option value="Máy in 1 màu"></option>
+        <option value="Máy bế"></option>
+        <option value="Máy cán màng"></option>
+        <option value="Máy xén"></option>
+        <option value="Máy gấp dán"></option>
+        <option value="Máy phát điện"></option>
+        <option value="Máy tính thiết kế"></option>
+    </datalist>
+
+    <div class="card">
+        <div class="card-header" style="border: none; padding-bottom: 0;">
+            <h2>Khai Báo Máy Móc / Tài Sản Cố Định</h2>
+        </div>
+        <div class="grid-4" style="margin-top: 15px;">
+			<div class="form-group">
+    <label>Chi tiền từ Ví</label>
+    <select id="ts_wallet" style="border: 2px solid #d93025; font-weight: bold;">
+        <option value="TIENMAT">💵 Tiền Mặt</option>
+        <option value="THIENLONG">💳 Bank Thiên Long</option>
+        <option value="ACB">💳 Bank ACB</option>
+    </select>
+</div>
+            <div class="form-group">
+                <label>Tên Máy / Tài Sản</label>
+                <input type="text" id="ts_name" list="list-maymoc" placeholder="Gõ hoặc chọn...">
+            </div>
+            <div class="form-group">
+                <label>Nguyên Giá (VNĐ)</label>
+                <input type="text" class="format-number" id="ts_gia" value="0">
+            </div>
+            <div class="form-group">
+                <label>Ngày đưa vào dùng</label>
+                <input type="date" id="ts_ngay">
+            </div>
+            <div class="form-group">
+                <label>Số tháng KH (VD: 60)</label>
+                <input type="number" id="ts_thang" value="60">
+            </div>
+        </div>
+        
+      <div class="form-group" style="margin-top: 15px; background: #e8f0fe; padding: 10px; border-radius: 6px; border: 1px solid #1a73e8;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; color: #1a73e8; font-weight: bold; font-size: 14px;">
+                <input type="checkbox" id="ts_is_old" style="width: 18px; height: 18px; cursor: pointer;">
+                ☑️ ĐÂY LÀ TÀI SẢN CŨ ĐÃ CÓ TỪ TRƯỚC (Check vào đây hệ thống sẽ KHÔNG lập Phiếu Chi trừ tiền trong Sổ Quỹ)
+            </label>
+        </div>
+        
+        <button class="btn-main" onclick="saveTaiSan()" style="margin-top: 15px;">LƯU TÀI SẢN VÀO HỆ THỐNG</button>
+    </div>
+    
+    <div class="card">
+        <div class="card-header"><h2>Danh Sách Máy Móc & Tiến Độ Khấu Hao</h2></div>
+        <p style="font-size: 13px; color: #5f6368; margin-bottom: 15px;"><i>* Mức khấu hao/tháng của máy Đang chạy sẽ được tự động đẩy vào Báo Cáo Tài Chính.</i></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tên Máy</th>
+                    <th>Ngày Dùng</th>
+                    <th>Nguyên Giá</th>
+                    <th>Thời Gian KH</th>
+                    <th>KH / Tháng</th>
+                    <th>Trạng Thái</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody id="table_taisan"></tbody>
+        </table>
+    </div>
+</div>
+        <div id="tab-taichinh" class="module">
+            <div class="filter-bar" style="background: linear-gradient(135deg, #9334e6 0%, #b388ff 100%); color: white; border: none;">
+                <b>Báo Cáo Tài Chính: </b>
+                <select id="f_month_tc" class="f-select" onchange="renderTaiChinh()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_tc" class="f-select" onchange="renderTaiChinh()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <button class="btn-small btn-success" style="margin-left: auto;" onclick="moFormNhapTaiChinh()">+ Cập Nhật Phụ Phí OPEX</button>
+            </div>
+            <div class="summary-box">
+                <div class="summary-grid">
+                    <div class="summary-item"><div class="summary-value" id="sum_doanhthu">0</div><div class="summary-label">Doanh Thu Thuần</div></div>
+                    <div class="summary-item"><div class="summary-value" id="sum_loinhuan">0</div><div class="summary-label">Lợi Nhuận Gộp</div></div>
+                    <div class="summary-item"><div class="summary-value" id="sum_tienmat">0</div><div class="summary-label">Tiền Mặt Cuối Kỳ</div></div>
+                    <div class="summary-item"><div class="summary-value" id="sum_ratio">0%</div><div class="summary-label">Biên LN Gộp</div></div>
+                </div>
+            </div>
+			<div id="finance_period_notice" style="display:none; margin:0 0 16px; padding:12px 14px; border-radius:8px; background:#fff7ed; border:1px solid #fed7aa; color:#9a3412;"></div>
+			<div class="card" style="border-top: 5px solid var(--purple);">
+    <div class="card-header">
+        <h2>📈 PHÂN TÍCH XU HƯỚNG DOANH THU & LỢI NHUẬN</h2>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-small btn-outline" onclick="renderCharts('year')">12 Tháng</button>
+            <button class="btn-small btn-outline" onclick="renderCharts('quarter')">4 Quý</button>
+        </div>
+    </div>
+    <div style="height: 350px;">
+        <canvas id="finChart"></canvas>
+    </div>
+</div>
+            <div class="fin-tabs">
+                <button class="fin-tab active" onclick="switchFinTab('pl')">📊 P&L - KQKD</button>
+                <button class="fin-tab" onclick="switchFinTab('cashflow')">💰 Cash Flow</button>
+                <button class="fin-tab" onclick="switchFinTab('balance')">⚖️ Cân Đối Kế Toán</button>
+                <button class="fin-tab" onclick="switchFinTab('ratios')">📈 Chỉ Số Sức Khỏe</button>
+				<button class="fin-tab" onclick="switchFinTab('sales-report')">📈 Báo Cáo Bán Hàng</button>
+            </div>
+            <div id="fin-pl" class="fin-content active">
+                <div class="card">
+                    <div class="card-header"><h2>Báo Cáo Kết Quả Hoạt Động Kinh Doanh (P&L)</h2><button class="btn-small btn-print" onclick="printReport('pl')">🖨️ In Báo Cáo</button></div>
+                    <table class="report-table">
+                        <thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th><th class="text-right">Tỷ Trọng</th></tr></thead>
+                        <tbody id="pl_table_body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="fin-cashflow" class="fin-content">
+                <div class="card">
+                    <div class="card-header"><h2>Báo Cáo Lưu Chuyển Tiền Tệ (Cash Flow)</h2><button class="btn-small btn-print" onclick="printReport('cashflow')">🖨️ In Báo Cáo</button></div>
+                    <table class="report-table">
+                        <thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th></tr></thead>
+                        <tbody id="cf_table_body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="fin-balance" class="fin-content">
+                <div class="card">
+                    <div class="card-header"><h2>Bảng Cân Đối Kế Toán (Balance Sheet)</h2><button class="btn-small btn-print" onclick="printReport('balance')">🖨️ In Báo Cáo</button></div>
+                    <div class="grid-2">
+                        <div>
+                            <h3 style="color: #1a73e8;">TÀI SẢN</h3>
+                            <table class="report-table"><thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th></tr></thead><tbody id="bs_assets_body"></tbody></table>
+                        </div>
+                        <div>
+                            <h3 style="color: #d93025;">NỢ PHẢI TRẢ & VỐN CSH</h3>
+                            <table class="report-table"><thead><tr><th>Chỉ Tiêu</th><th class="text-right">Số Tiền (VNĐ)</th></tr></thead><tbody id="bs_liabilities_body"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="fin-ratios" class="fin-content">
+                <div class="card">
+                    <div class="card-header"><h2>Chỉ Số Sức Khỏe Tài Chính</h2></div>
+                    <div class="grid-3" id="ratios_grid"></div>
+                </div>
+            </div>
+<div id="fin-sales-report" class="fin-content">
+    <div class="card">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0">📊 BÁO CÁO BÁN HÀNG TỔNG HỢP</h2>
+            <span style="color:#1e8e3e; font-size:13px; font-weight:bold;"><i>* Tự động đồng bộ số liệu từ Tab 4 (Xuất Bán Hàng)</i></span>
+        </div>
+        <div class="grid-2" style="gap: 20px;">
+            <div class="card" style="border-top: 4px solid var(--info); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">🏆 Top Sản phẩm bán chạy (Doanh thu)</h4>
+                <div id="stat_products" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--success); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">💰 Biên lợi nhuận theo Sản phẩm</h4>
+                <div id="stat_margin" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--warning); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">💎 Top Khách hàng VIP</h4>
+                <div id="stat_vip" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--purple); margin:0; padding:15px;">
+                <h4 style="margin-top:0;">📦 Top Sản lượng Xuất kho (Số lượng SP)</h4>
+                <div id="stat_qty" style="height:220px; overflow-y:auto; font-size:13px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+            <div id="form_nhap_taichinh" class="card" style="display:none; border: 2px solid #9334e6;">
+                <div class="card-header">
+                    <h2 style="color: #9334e6;">Cập Nhật Phụ Phí Tài Chính & Đầu Tư</h2>
+                    <button class="btn-small btn-outline" onclick="document.getElementById('form_nhap_taichinh').style.display='none'">Đóng</button>
+                </div>
+                <p style="margin-bottom: 15px; color: #5f6368; font-size: 13px;"><i>* Mọi thông số Sếp nhập sẽ được <b>LƯU TỰ ĐỘNG</b> ngay lập tức vào báo cáo. Tiền Lương đã được LINK TỰ ĐỘNG từ Module Nhân Sự.</i></p>
+                <div class="grid-2">
+                    <div class="input-section">
+                        <h4>📈 DOANH THU & GIÁ VỐN</h4>
+<div class="form-group"><label>Doanh thu CHƯA VAT (Tự động từ Tab 4)</label><input type="text" class="format-number readonly-field" id="tc_doanhthu" readonly></div>
+<div class="form-group"><label>Giá vốn hàng bán (Tự động từ Tab 4)</label><input type="text" class="format-number readonly-field" id="tc_giavon" readonly></div>
+<div class="form-group"><label>Chiết khấu doanh thu</label><input type="text" class="format-number" id="tc_giamtru" value="0" oninput="saveTaiChinh(false)"></div>
+                    </div>
+                    <div class="input-section">
+                        <h4>💼 CHI PHÍ HOẠT ĐỘNG (OPEX)</h4>
+                        <div class="form-group"><label>Chi phí Bán hàng (Tự động từ Sổ Quỹ)</label><input type="text" class="format-number readonly-field" id="tc_cp_banhang" readonly style="color:#d93025; font-weight:bold;"></div>
+<div class="form-group"><label>Chi phí vận hành (Tự động từ Sổ Quỹ)</label><input type="text" class="format-number readonly-field" id="tc_cp_quanly" readonly style="color:#d93025; font-weight:bold;"></div>
+<div class="form-group">
+    <label>Khấu hao tài sản (Auto từ Báo cáo TS)</label>
+    <input type="text" class="format-number readonly-field" id="tc_khauhao" readonly style="color: var(--orange);">
+</div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="input-section">
+                        <h4>💰 DÒNG TIỀN</h4>
+<div class="form-group"><label>Tiền thu từ KH (Tự động từ Tab 4)</label><input type="text" class="format-number readonly-field" id="tc_tien_thu" readonly style="color: #1a73e8; font-weight: bold;"></div>						<div class="form-group"><label>Tiền trả NCC (Từ Phiếu Chi)</label><input type="text" class="format-number readonly-field" id="tc_tien_tra_ncc" readonly></div>
+                        <div class="form-group"><label>Tiền trả lương NV (Auto từ Module Lương)</label><input type="text" class="format-number readonly-field" id="tc_tien_luong" readonly style="color: #d93025; font-weight: bold;"></div>
+<div class="form-group"><label>Tiền chi đầu tư (Mua máy móc - Auto)</label><input type="text" class="format-number readonly-field" id="tc_tien_dautu" readonly style="color:#d93025;"></div><div class="form-group"><label>Tiền đi vay / gọi vốn (Tự động từ Tab 10)</label><input type="text" class="format-number readonly-field" id="tc_tien_vay" readonly style="color: #1e8e3e; font-weight: bold;"></div><div class="form-group"><label>Tiền trả nợ gốc/lãi vay (Tự động từ Tab 10)</label><input type="text" class="format-number readonly-field" id="tc_tien_trano" readonly style="color: #d93025;"></div>                    </div>
+                    <div class="input-section">
+                        <h4>📊 TÀI SẢN & NỢ CÒN LẠI</h4>
+<div class="form-group"><label>Tiền mặt & Ngân hàng đầu kỳ (Auto từ Sổ Quỹ)</label><input type="text" class="format-number readonly-field" id="tc_tien_dauky" readonly style="color:#1a73e8; font-weight:bold;"></div>                        <div class="form-group"><label>Giá trị hàng tồn kho (Từ Kho)</label><input type="text" class="format-number readonly-field" id="tc_tonkho" readonly></div>
+                        <div class="form-group"><label>Nợ ngắn hạn NCC (Từ Sổ Cái)</label><input type="text" class="format-number readonly-field" id="tc_no_nganhan" readonly></div>
+                        <div class="form-group"><label>Công nợ tháng này</label><input type="text" class="format-number" id="tc_phaithu" value="0" oninput="saveTaiChinh(false)"></div>
+<div class="form-group"><label>Tài sản dài hạn (Máy móc - Tự động từ Tab 8)</label><input type="text" class="format-number readonly-field" id="tc_taisan_daihan" readonly style="color: #f29900; font-weight: bold;"></div>
+<div class="form-group"><label>Nợ dài hạn (Vay NH - Tự động từ Tab 10)</label><input type="text" class="format-number readonly-field" id="tc_no_daihan" readonly style="color: #d93025; font-weight: bold;"></div>                    </div>
+                </div>
+                <button class="btn-main" onclick="saveTaiChinh(true)" style="background: #1e8e3e;">✔️ HỆ THỐNG ĐÃ TỰ ĐỘNG LƯU. BẤM ĐỂ ĐÓNG.</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Báo Cáo Các Tháng (Tự động Update)</h2></div>
+                <div class="history-table">
+                    <table>
+                        <thead><tr><th>Tháng/Năm</th><th>Doanh Thu Thuần</th><th>Lợi Nhuận Gộp</th><th>Lợi Nhuận Ròng</th><th>Tiền Mặt Cuối Kỳ</th></tr></thead>
+                       <tbody id="table_lichsu_tc"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-khoanvay" class="module">
+            <div class="card">
+                <div class="card-header"><h2>Khai Báo Khoản Vay / Nợ Ngân Hàng</h2></div>
+                <div class="grid-4">
+					<div class="form-group">
+    <label>Giải ngân vào Ví</label>
+    <select id="loan_wallet" style="border: 2px solid #1e8e3e; font-weight: bold;">
+        <option value="THIENLONG">💳 Bank Thiên Long</option>
+        <option value="ACB">💳 Bank ACB</option>
+        <option value="TIENMAT">💵 Tiền Mặt</option>
+    </select>
+</div>
+                    <div class="form-group"><label>Ngân hàng / Nguồn vay</label><input type="text" id="loan_bank" placeholder="VD: Vietcombank - Gói ưu đãi"></div>
+                    <div class="form-group"><label>Số tiền vay (VNĐ)</label><input type="text" class="format-number" id="loan_amount" value="0"></div>
+                    <div class="form-group"><label>Lãi suất (%/năm)</label><input type="number" id="loan_rate" value="10" step="0.1"></div>
+                    <div class="form-group"><label>Thời hạn vay (Tháng)</label><input type="number" id="loan_term" value="12"></div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label>Ngày giải ngân</label><input type="date" id="loan_startdate"></div>
+                    <div class="form-group"><label>Hình thức trả lãi</label>
+                        <select id="loan_method">
+                            <option value="reducing">Dư nợ giảm dần (Phổ biến)</option>
+                            <option value="flat">Lãi suất cố định</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-main" style="background: var(--purple);" onclick="saveKhoanVay()">LƯU KHOẢN VAY & TỰ ĐỘNG LẬP LỊCH TRẢ NỢ</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h2>Danh Sách Các Khoản Vay Hiện Tại</h2></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ngân Hàng</th>
+                            <th>Ngày Vay</th>
+                            <th>Gốc Ban Đầu</th>
+                            <th>Lãi Suất</th>
+                            <th>Thời Hạn</th>
+                            <th>Nợ Gốc Còn Lại</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_loan_list"></tbody>
+                </table>
+            </div>
+
+           <div id="loan_schedule_view" class="card" style="display:none">
+                <div class="card-header"><h2 id="schedule_title">Lịch Trả Nợ Chi Tiết</h2><button class="btn-small btn-outline" onclick="document.getElementById('loan_schedule_view').style.display='none'">Đóng</button></div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="report-table">
+                        <thead><tr><th>Kỳ trả nợ</th><th>Gốc phải trả</th><th>Lãi phải trả</th><th>Tổng gốc + lãi</th><th>Dư nợ còn lại</th></tr></thead>
+                        <tbody id="table_loan_schedule"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div> <div id="tab-history-log" class="module">
+            <div class="card" style="border-top: 5px solid #5f6368;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="color: #333; margin: 0;">🔍 Nhật Ký Hoạt Động Hệ Thống</h2>
+                    <input type="text" id="search_log" placeholder="Tìm hành động, người dùng..." onkeyup="renderHistoryLog()" style="width: 300px; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
+                <div style="max-height: 600px; overflow-y: auto; margin-top: 10px;">
+                    <table class="report-table">
+                        <thead style="position: sticky; top: 0; z-index: 10;">
+                            <tr>
+                                <th style="width: 150px; background: #5f6368;">Thời Gian</th>
+                                <th style="width: 120px; background: #5f6368;">Tài Khoản</th>
+                                <th style="width: 150px; background: #5f6368;">Hành Động</th>
+                                <th style="background: #5f6368;">Chi Tiết Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_history_log"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-danhba" class="module">
+            <div class="card" style="border-top:4px solid #1a73e8;">
+                <div class="card-header"><h2>Danh bạ</h2></div>
+                <div class="fin-tabs"><button class="fin-tab active" data-directory-tab="employees" onclick="switchDirectoryTab('employees')">👥 Nhân viên</button><button class="fin-tab" data-directory-tab="customers" onclick="switchDirectoryTab('customers')">👤 Khách hàng</button><button class="fin-tab" data-directory-tab="suppliers" onclick="switchDirectoryTab('suppliers')">🤝 Đối tác mua hàng</button></div>
+                <div id="directory_tab_host"></div>
+            </div>
+        </div>
+
+        <div id="tab-nhanvien" class="module">
+            <div class="card directory-form-card" style="border-top:4px solid #9334e6; max-width:1100px;"><div class="card-header"><h2>Danh bạ nhân viên</h2><button class="btn-small btn-outline" onclick="loadDirectory('employees')">↻ Tải lại</button></div>
+                <div class="grid-3 directory-form-grid"><div><label>Họ và tên</label><input id="directory_employee_name" placeholder="Nguyễn Văn A"></div><div><label>Số điện thoại</label><input id="directory_employee_phone" placeholder="09xx..."></div><div><label>Chức vụ</label><input id="directory_employee_position" placeholder="Kế toán, In ấn..."></div></div>
+                <button id="directory_employees_save" class="btn-main directory-save" onclick="saveDirectory('employees')">LƯU NHÂN VIÊN</button><button id="directory_employees_cancel" class="btn-small btn-outline" style="display:none; margin-left:8px;" onclick="cancelDirectoryEdit('employees')">HỦY SỬA</button></div>
+            <div class="card"><table><thead><tr><th>Mã NV</th><th>Họ tên</th><th>Liên hệ</th><th>Chức vụ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody id="directory_employees_table"></tbody></table></div>
+        </div>
+
+        <div id="tab-khachhang" class="module">
+            <div class="card directory-form-card" style="border-top:4px solid #1a73e8; max-width:1100px;"><div class="card-header"><h2>Danh bạ khách hàng</h2><button class="btn-small btn-outline" onclick="loadDirectory('customers')">↻ Tải lại</button></div>
+                <div class="grid-3 directory-form-grid"><div><label>Tên khách hàng</label><input id="directory_customer_name" placeholder="Họ và tên khách hàng"></div><div><label>Ngày tháng năm sinh</label><input type="date" id="directory_customer_date_of_birth"></div><div><label>Số điện thoại</label><input id="directory_customer_phone" inputmode="tel" placeholder="09xx..."></div></div>
+                <button id="directory_customers_save" class="btn-main directory-save" onclick="saveDirectory('customers')">LƯU KHÁCH HÀNG</button><button id="directory_customers_cancel" class="btn-small btn-outline" style="display:none; margin-left:8px;" onclick="cancelDirectoryEdit('customers')">HỦY SỬA</button></div>
+            <div class="card"><table><thead><tr><th>Mã KH</th><th>Tên khách hàng</th><th>Ngày sinh</th><th>Số điện thoại</th><th>Thao tác</th></tr></thead><tbody id="directory_customers_table"></tbody></table></div>
+        </div>
+
+        <div id="tab-doitac" class="module">
+            <div class="card directory-form-card" style="border-top:4px solid #f29900; max-width:1100px;"><div class="card-header"><h2>Danh bạ đối tác mua hàng / nhà cung cấp</h2><button class="btn-small btn-outline" onclick="loadDirectory('suppliers')">↻ Tải lại</button></div>
+                <div class="grid-2 directory-form-grid"><div><label>Tên NCC</label><input id="directory_supplier_name" placeholder="Tên nhà cung cấp"></div><div><label>Loại gia công</label><select id="directory_supplier_processing_type"><option value="">-- Chọn loại gia công --</option><option value="Nhà in">Nhà in</option><option value="Nhà giấy">Nhà giấy</option><option value="Nhà gia công">Nhà gia công</option></select></div><div><label>Người liên hệ</label><input id="directory_supplier_contact_name" placeholder="Họ và tên người liên hệ"></div><div><label>Số điện thoại</label><input id="directory_supplier_phone" inputmode="tel" placeholder="09xx..."></div></div>
+                <button id="directory_suppliers_save" class="btn-main directory-save" onclick="saveDirectory('suppliers')">LƯU NHÀ CUNG CẤP</button><button id="directory_suppliers_cancel" class="btn-small btn-outline" style="display:none; margin-left:8px;" onclick="cancelDirectoryEdit('suppliers')">HỦY SỬA</button></div>
+            <div class="card"><table><thead><tr><th>Mã NCC</th><th>Tên NCC</th><th>Loại gia công</th><th>Người liên hệ</th><th>Số điện thoại</th><th>Thao tác</th></tr></thead><tbody id="directory_suppliers_table"></tbody></table></div>
+        </div>
+
+        <div id="tab-admin" class="module">
+            <div class="card admin-account-form" style="max-width:900px; border-top:4px solid #d93025;">
+                <div class="card-header"><h2>Quản trị tài khoản nhân viên</h2></div>
+                <p style="margin-bottom:15px;color:#666;">Chỉ ADMIN được tạo, đổi role, đặt lại mật khẩu hoặc khóa tài khoản.</p>
+                <div class="grid-2"><div><label>Nhân viên</label><select id="admin_employee_id"><option value="">Không liên kết hồ sơ</option></select></div><div><label>Role</label><select id="admin_role"><option value="SALE">SALE - Bán hàng</option><option value="DESIGNER">DESIGNER - Kế hoạch/SX</option><option value="WORKER">WORKER - Sản xuất</option><option value="THUQUY">THUQUY - Sổ quỹ</option><option value="ACCOUNTANT">ACCOUNTANT - Kế toán</option><option value="OTHER">OTHER - Không cấp quyền</option><option value="ADMIN">ADMIN - Quản trị</option></select></div></div>
+                <div style="margin-top:15px;"><label>Module được sử dụng</label><div id="admin_modules" class="grid-3" style="padding:12px;background:#f8f9fa;border:1px solid #ddd;border-radius:6px;"><label class="check-luong"><input type="checkbox" value="planning"> 1. Lập kế hoạch / Lệnh SX</label><label class="check-luong"><input type="checkbox" value="kanban"> 2. Tiến độ Kanban</label><label class="check-luong"><input type="checkbox" value="inventory"> 3. Báo cáo tồn kho</label><label class="check-luong"><input type="checkbox" value="sales"> 4. Xuất bán hàng</label><label class="check-luong"><input type="checkbox" value="debts"> 5. Công nợ</label><label class="check-luong"><input type="checkbox" value="production_dashboard"> 6. Dashboard sản xuất</label><label class="check-luong"><input type="checkbox" value="payroll"> 7. Lương & KPI</label><label class="check-luong"><input type="checkbox" value="assets"> 8. Tài sản</label><label class="check-luong"><input type="checkbox" value="loans"> 9. Khoản vay</label><label class="check-luong"><input type="checkbox" value="wallet"> 10. Sổ quỹ</label><label class="check-luong"><input type="checkbox" value="finance"> 11. Báo cáo tài chính</label><label class="check-luong"><input type="checkbox" value="history"> 12. Nhật ký hệ thống</label></div></div>
+                <div class="grid-2" style="margin-top:12px;"><div><label>Tên đăng nhập</label><input id="admin_username" type="text" autocomplete="off" placeholder="vd: nguyenvana"></div><div><label>Mật khẩu ban đầu</label><input id="admin_password" type="password" autocomplete="new-password" placeholder="Ít nhất 8 ký tự"></div></div>
+                <button class="btn-main" onclick="createEmployeeAccount()">TẠO TÀI KHOẢN NHÂN VIÊN</button>
+            </div>
+            <div class="card"><div class="card-header"><h2>Danh sách tài khoản</h2><button class="btn-small btn-outline" onclick="loadAdminAccounts()">↻ Tải lại</button></div><table><thead><tr><th>Tên đăng nhập</th><th>Role</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead><tbody id="admin_users_table"></tbody></table></div>
+        </div>
+    </div> 
+<script src="JS/app.js"></script>
+<script src="JS/api.js"></script>
+</body>
+</html>

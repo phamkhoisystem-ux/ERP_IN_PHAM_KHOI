@@ -1,0 +1,56 @@
+        <div id="tab-khoanvay" class="module">
+            <div class="card">
+                <div class="card-header"><h2>Khai Báo Khoản Vay / Nợ Ngân Hàng</h2></div>
+                <div class="grid-4">
+					<div class="form-group">
+    <label>Giải ngân vào Ví</label>
+    <select id="loan_wallet" style="border: 2px solid #1e8e3e; font-weight: bold;">
+        <option value="THIENLONG">💳 Bank Thiên Long</option>
+        <option value="ACB">💳 Bank ACB</option>
+        <option value="TIENMAT">💵 Tiền Mặt</option>
+    </select>
+</div>
+                    <div class="form-group"><label>Ngân hàng / Nguồn vay</label><input type="text" id="loan_bank" placeholder="VD: Vietcombank - Gói ưu đãi"></div>
+                    <div class="form-group"><label>Số tiền vay (VNĐ)</label><input type="text" class="format-number" id="loan_amount" value="0"></div>
+                    <div class="form-group"><label>Lãi suất (%/năm)</label><input type="number" id="loan_rate" value="10" step="0.1"></div>
+                    <div class="form-group"><label>Thời hạn vay (Tháng)</label><input type="number" id="loan_term" value="12"></div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label>Ngày giải ngân</label><input type="date" id="loan_startdate"></div>
+                    <div class="form-group"><label>Hình thức trả lãi</label>
+                        <select id="loan_method">
+                            <option value="reducing">Dư nợ giảm dần (Phổ biến)</option>
+                            <option value="flat">Lãi suất cố định</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-main" style="background: var(--purple);" onclick="saveKhoanVay()">LƯU KHOẢN VAY & TỰ ĐỘNG LẬP LỊCH TRẢ NỢ</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h2>Danh Sách Các Khoản Vay Hiện Tại</h2></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ngân Hàng</th>
+                            <th>Ngày Vay</th>
+                            <th>Gốc Ban Đầu</th>
+                            <th>Lãi Suất</th>
+                            <th>Thời Hạn</th>
+                            <th>Nợ Gốc Còn Lại</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_loan_list"></tbody>
+                </table>
+            </div>
+
+           <div id="loan_schedule_view" class="card" style="display:none">
+                <div class="card-header"><h2 id="schedule_title">Lịch Trả Nợ Chi Tiết</h2><button class="btn-small btn-outline" onclick="document.getElementById('loan_schedule_view').style.display='none'">Đóng</button></div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="report-table">
+                        <thead><tr><th>Kỳ trả nợ</th><th>Gốc phải trả</th><th>Lãi phải trả</th><th>Tổng gốc + lãi</th><th>Dư nợ còn lại</th></tr></thead>
+                        <tbody id="table_loan_schedule"></tbody>
+                    </table>
+                </div>
+            </div>

@@ -1,0 +1,60 @@
+       <div id="tab-congno" class="module">
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-header" style="margin-bottom: 0; padding-bottom: 0; border: none;">
+                    <h2>Báo cáo Danh Mục Nhà Cung Cấp</h2>
+                    <button class="btn-small" style="background:#f29900; color:#fff;" onclick="moFormAddNCC()">+ Thêm / Báo cáo NCC</button>
+                </div>
+                <div id="box_manage_ncc" style="display:none; background:#fef7e0; padding:15px; border-radius:6px; margin-top:15px; border:1px solid #fce8e6;">
+                    <div style="display:flex; gap:10px; align-items:flex-end;">
+                        <div style="flex:1"><label>Nhập Tên Nhà Cung Cấp Mới</label><input type="text" id="new_ncc_name" placeholder="VD: Cty Bao Bì D..."></div>
+                        <button class="btn-small btn-success" style="padding:10px 15px;" onclick="addNCCManual()">Lưu NCC</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-bar"><input type="text" id="search_cn" placeholder="Tìm tên nhà cung cấp..." style="width:300px;" oninput="renderCongNo()"></div>
+            
+            <div class="split-view">
+                <div class="split-left">
+                    <h3>Tổng Nợ Theo NCC</h3>
+                    <table>
+                        <thead><tr><th>Nhà Cung Cấp</th><th>Tổng Nợ Còn Lại</th></tr></thead>
+                        <tbody id="table_congno"></tbody>
+                    </table>
+                </div>
+                <div class="split-right" id="cn_detail_viewer">
+                    <div style="text-align:center; color:#999; margin-top:50px;"><i>Bấm vào một NCC bên trái để đối chiếu theo từng Mã SX.</i></div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 20px; border-top: 4px solid #1a73e8;">
+                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="margin:0;">Lịch Sử Chi Trả Công Nợ NCC</h2>
+                    <div class="filter-bar" style="margin:0; padding:0; border:none; background:transparent;">
+                        <select id="f_month_cn_hs" class="f-select" onchange="renderLichSuThanhToanNCC()">
+                            <option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option>
+                            <option value="04" selected>Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option>
+                            <option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option>
+                            <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                        </select>
+                        <select id="f_year_cn_hs" class="f-select" onchange="renderLichSuThanhToanNCC()">
+                            <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày Thanh Toán</th>
+                                <th>Nhà Cung Cấp</th>
+                                <th>Mã Phiếu</th> <th>Thanh toán Lệnh SX</th>
+                                <th class="text-right">Số Tiền (VNĐ)</th>
+                                <th>Ghi Chú</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_lichsu_thanhtoan_ncc"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>

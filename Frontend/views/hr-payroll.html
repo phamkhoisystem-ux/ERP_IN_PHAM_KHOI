@@ -1,0 +1,101 @@
+        <div id="tab-luong" class="module">
+            <div class="card">
+                <div class="card-header">
+                    <h2 id="form-luong-title">Thêm / Chỉnh Sửa Nhân Viên</h2>
+                    <input type="hidden" id="ns_id">
+                </div>
+                
+                <div class="grid-4">
+                    <div class="form-group"><label>Tên nhân viên</label><input type="text" id="ns_name" placeholder="Nguyễn Văn A"></div>
+					<div class="form-group"><label>Số điện thoại</label><input type="number" id="ns_phone" placeholder="09xxxxxx"></div>
+                    <div class="form-group"><label>Ngày vào làm</label><input type="date" id="ns_startdate"></div>
+                    <div class="form-group"><label>Vị trí</label><select id="ns_position"></select></div>
+                    <div class="form-group"><label>Cấp bậc</label><select id="ns_level" onchange="toggleFormLuong()"></select></div>
+                </div>
+                
+                <div class="form-group" style="width: 25%;">
+                    <label>Loại hợp đồng</label>
+                    <select id="ns_type" onchange="toggleFormLuong()">
+                        <option value="official">Hợp đồng chính thức</option>
+                        <option value="part-time">Hợp đồng Part-time</option>
+                    </select>
+                </div>
+
+                <div id="ns_form_official" style="background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #ddd; margin-bottom:15px;">
+                    <h3 style="margin-top:0;">Dành cho Hợp Đồng Chính Thức</h3>
+                    <div class="grid-3">
+                        <div class="form-group"><label>P1 - Lương cam kết (VNĐ)</label><input type="text" class="format-number" id="ns_p1" value="0"></div>
+                        <div class="form-group"><label>Thưởng khác (VNĐ)</label><input type="text" class="format-number" id="ns_bonus" value="0"></div>
+                        <div class="form-group"><label>Khấu trừ (Thuế, BHXH...)</label><input type="text" class="format-number" id="ns_deduct" value="0"></div>
+                    </div>
+                    
+                    <div id="ns_box_kpi" style="border-top: 1px dashed #ccc; padding-top:15px; margin-top:10px;">
+                        <label style="color:#1a73e8; font-weight:bold;">P2 - Lương KPI (Chỉ áp dụng Level 2 trở lên)</label>
+                        <div class="grid-2">
+                            <div class="form-group"><label>Doanh thu tháng (VNĐ) để xét KPI</label><input type="text" class="format-number" id="ns_kpi_rev" value="0"></div>
+                            <div class="form-group"><label>% Hoa hồng / Doanh thu</label><input type="number" id="ns_kpi_percent" value="0" step="0.1"></div>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #ccc; padding-top:15px; margin-top:10px;">
+                        <label style="color:#1e8e3e; font-weight:bold;">P3 - Phụ cấp chuyên cần (Check để cộng 200k/mục)</label>
+                        <div class="grid-4" style="margin-top: 10px;">
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_1"> Đi làm đủ ngày</label>
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_2"> Đi làm đúng giờ</label>
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_3"> Tác phong tốt</label>
+                            <label class="check-luong"><input type="checkbox" id="ns_p3_4"> Tập thể tốt</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ns_form_parttime" style="display:none; background:#fef7e0; padding:15px; border-radius:6px; border:1px solid #fce8e6; margin-bottom:15px;">
+                    <h3 style="margin-top:0; color:#d93025;">Dành cho Part-Time</h3>
+                    <div class="grid-3">
+                        <div class="form-group"><label>Lương theo giờ (VNĐ)</label><input type="text" class="format-number" id="ns_pt_rate" value="0"></div>
+                        <div class="form-group"><label>Tổng số giờ làm trong kỳ</label><input type="text" class="format-number" id="ns_pt_hours" value="0"></div>
+                        <div class="form-group"><label>Thưởng/Phạt bù trừ thêm</label><input type="text" class="format-number" id="ns_pt_bonus" value="0"></div>
+                    </div>
+                </div>
+
+                <div class="form-group"><label>Ghi chú trả lương</label><input type="text" id="ns_note" placeholder="Ví dụ: Lương tháng 4..."></div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-main" style="width: auto; padding: 10px 30px;" id="btn-save-ns" onclick="saveNhanVien()">LƯU THÔNG TIN</button>
+                    <button class="btn-outline" style="width: auto; padding: 10px 30px; display:none;" id="btn-cancel-ns" onclick="resetFormNS()">HỦY SỬA</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Danh Sách Nhân Viên & Tính Lương</h2>
+                </div>
+                <div class="filter-bar">
+                    <b>Lọc Chốt Lương Tháng: </b>
+                    <select id="f_month_ns" class="f-select" onchange="renderNhanVien()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                    <select id="f_year_ns" class="f-select" onchange="renderNhanVien()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nhân Viên</th>
+							<th>Số Điện Thoại</th>
+                            <th>Vị Trí / Bậc</th>
+                            <th>Lương Cơ Bản</th>
+                            <th>Thực Nhận (Tạm tính)</th>
+                            <th class="text-center">Trạng Thái / Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_nhanvien"></tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Trả Lương Hệ Thống</h2></div>
+                <table>
+                    <thead>
+                        <tr><th>Ngày Chốt</th><th>Nhân Viên</th><th>Kỳ Lương</th><th>Thực Nhận</th><th>Ghi Chú</th></tr>
+                    </thead>
+                    <tbody id="table_lichsu_luong"></tbody>
+                </table>
+            </div>
+        </div>

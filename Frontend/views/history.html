@@ -1,0 +1,22 @@
+        </div> <div id="tab-history-log" class="module">
+            <div class="card" style="border-top: 5px solid #5f6368;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="color: #333; margin: 0;">🔍 Nhật Ký Hoạt Động Hệ Thống</h2>
+                    <input type="text" id="search_log" placeholder="Tìm hành động, người dùng..." onkeyup="renderHistoryLog()" style="width: 300px; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
+                <div style="max-height: 600px; overflow-y: auto; margin-top: 10px;">
+                    <table class="report-table">
+                        <thead style="position: sticky; top: 0; z-index: 10;">
+                            <tr>
+                                <th style="width: 150px; background: #5f6368;">Thời Gian</th>
+                                <th style="width: 120px; background: #5f6368;">Tài Khoản</th>
+                                <th style="width: 150px; background: #5f6368;">Hành Động</th>
+                                <th style="background: #5f6368;">Chi Tiết Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_history_log"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+

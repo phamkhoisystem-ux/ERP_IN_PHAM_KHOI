@@ -1,0 +1,44 @@
+		<div id="tab-baocao" class="module">
+            <div class="filter-bar" style="background: #e8f0fe; border-color: #cce5ff;">
+                <b>Báo Cáo Sản Xuất Tháng: </b>
+                <select id="f_month_bc" class="f-select" onchange="renderBaoCao()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_bc" class="f-select" onchange="renderBaoCao()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <button class="btn-small btn-main" style="margin:0 0 0 auto; width:auto;" onclick="moFormNhatKy()">+ Nhập Nhật Ký Ca SX</button>
+            </div>
+            <div class="grid-5" style="margin-bottom: 20px;">
+                <div class="kpi-card" style="border-left-color: #1a73e8;"><div class="kpi-title">Tiến Độ Lệnh (Tháng)</div><div class="kpi-value" id="kpi_lenh">0 / 0</div><div class="kpi-sub">Lệnh đã xong / Tổng lệnh</div><div class="progress-bg"><div class="progress-bar" id="kpi_lenh_bar" style="width: 0%; background:#1a73e8;"></div></div></div>
+                <div class="kpi-card" style="border-left-color: #1e8e3e;"><div class="kpi-title">Tỷ Lệ Đạt Chuẩn (Yield)</div><div class="kpi-value" id="kpi_yield">0%</div><div class="kpi-sub">Hàng Pass / Tổng sản lượng</div><div class="progress-bg"><div class="progress-bar" id="kpi_yield_bar" style="width: 0%; background:#1e8e3e;"></div></div></div>
+                <div class="kpi-card" style="border-left-color: #f29900;"><div class="kpi-title">Tỷ Lệ Phế Phẩm (Defect)</div><div class="kpi-value" id="kpi_defect" style="color: #d93025;">0%</div><div class="kpi-sub">Hàng lỗi gãy, lệch màu...</div></div>
+                <div class="kpi-card" style="border-left-color: #9334e6;"><div class="kpi-title">Hiệu Suất Máy (OEE)</div><div class="kpi-value" id="kpi_oee">0%</div><div class="kpi-sub">Uptime / Tổng thờigian ca</div><div class="progress-bg"><div class="progress-bar" id="kpi_oee_bar" style="width: 0%; background:#9334e6;"></div></div></div>
+                <div class="kpi-card" style="border-left-color: #ff6d01;"><div class="kpi-title">Tồn Kho Trên Chuyền</div><div class="kpi-value" id="kpi_wip">0</div><div class="kpi-sub">Số lệnh đang in & gia công</div></div>
+            </div>
+            <div class="card" id="box_nhatky" style="display:none; border: 2px solid #1a73e8;">
+                <div class="card-header"><h2 style="color: #1a73e8;">Nhập Nhật Ký Sản Xuất Cuối Ca</h2><button class="btn-small btn-outline" style="margin:0" onclick="document.getElementById('box_nhatky').style.display='none'">Đóng Form</button></div>
+                <div class="grid-4">
+                    <div class="form-group"><label>Ngày báo cáo</label><input type="date" id="nk_date"></div>
+                    <div class="form-group"><label>Ca làm việc</label><select id="nk_ca"><option>Ca 1 (Sáng)</option><option>Ca 2 (Tối)</option><option>Hành chính</option></select></div>
+                    <div class="form-group" style="grid-column: span 2"><label>Thực hiện cho Mã Lệnh SX</label><select id="nk_idSX"></select></div>
+                </div>
+                <h3 style="margin-top:10px;">1. Sản Lượng & Chất Lượng</h3>
+                <div class="grid-3">
+                    <div class="form-group"><label>Mục tiêu ca (Target)</label><input type="text" class="format-number" id="nk_target" value="0"></div>
+                    <div class="form-group"><label>Sản lượng ĐẠT (Pass)</label><input type="text" class="format-number" id="nk_pass" value="0"></div>
+                    <div class="form-group"><label style="color:#d93025">Sản lượng LỖI (Defect)</label><input type="text" class="format-number" id="nk_defect" value="0"></div>
+                </div>
+                <h3 style="margin-top:10px;">2. Máy Móc (Tính OEE) & Nhân Sự</h3>
+                <div class="grid-4">
+                    <div class="form-group"><label>Giờ chạy máy (Uptime)</label><input type="text" class="format-number" id="nk_uptime" value="8"></div>
+                    <div class="form-group"><label>Giờ chết máy (Downtime)</label><input type="text" class="format-number" id="nk_downtime" value="0"></div>
+                    <div class="form-group"><label>Sĩ số công nhân</label><input type="text" class="format-number" id="nk_workers" value="0"></div>
+                    <div class="form-group"><label>Tổng giờ Tăng ca (OT)</label><input type="text" class="format-number" id="nk_ot" value="0"></div>
+                </div>
+                <button class="btn-main" onclick="saveNhatKy()">LƯU BÁO CÁO CA</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><h2>Lịch Sử Nhật Ký Ca Trong Tháng</h2></div>
+                <table>
+                    <thead><tr><th>Ngày/Ca</th><th>Mã Lệnh SX</th><th>Đạt / Mục tiêu</th><th>Phế phẩm</th><th>Uptime</th><th>Nhân sự</th></tr></thead>
+                    <tbody id="table_baocao"></tbody>
+                </table>
+            </div>
+        </div>

@@ -1,0 +1,80 @@
+        <div id="tab-kehoach" class="module active">
+            <div class="card" style="max-width: 1200px;">
+                <div class="card-header" style="border: none; padding-bottom: 0;">
+                    <h2>Lập Phiếu Sản Xuất / Thương Mại <span id="draft_notice_kh" class="draft-notice">Đã khôi phục dữ liệu nháp...</span></h2>
+                </div>
+                <div class="grid-3" style="margin-top: 15px;">
+                    <div class="form-group"><label>Ngày lập</label><input type="date" id="kh_ngay"></div>
+                    <div class="form-group"><label>Deadline Giao Khách</label><input type="date" id="kh_deadline"></div>
+                    <div class="form-group"><label>Tên Đơn Hàng (Ghi chú)</label><input type="text" id="kh_ten" placeholder="VD: Hộp Giấy Trà Oolong"></div>
+                </div>
+                <div class="form-group">
+                    <label>TÊN BÀI IN (Bắt buộc - Tên Thành Phẩm sẽ nhập kho)</label>
+                    <input type="text" id="kh_anpham" placeholder="Nhập tên bài in..." style="background: #e6f4ea; border-color: #1e8e3e; font-weight:bold; font-size:16px;">
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="loai_phieu" value="thuongmai" onchange="toggleLoaiPhieu()" checked> Phiếu Thương Mại (Chỉ Mua Đi Bán Lại)</label>
+                    <label><input type="radio" name="loai_phieu" value="sanxuat" onchange="toggleLoaiPhieu()"> Phiếu Sản Xuất (Lập Lệnh In & Gia công lên Kanban)</label>
+                </div>
+                <div id="form_thuongmai">
+                    <div class="grid-4" style="align-items: flex-end;">
+                        <div class="form-group"><label>Nhà Cung Cấp</label><input type="text" id="tm_ncc" list="list-ncc" placeholder="Nhập tên NCC"></div>
+                        <div class="form-group"><label>Số Lượng Nhập</label><input type="text" class="format-number" id="tm_sl" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <div class="form-group"><label>Đơn Giá (Chưa VAT)</label><input type="text" class="format-number" id="tm_gia" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+                            <label class="vat-box"><input type="checkbox" id="tm_vat" onchange="tinhTongTienPhieu()"> + VAT 8%</label>
+                            <div style="flex:1"><label>Tổng Tiền</label><input type="text" id="tm_thanh" readonly style="background:#f1f3f4; font-weight:bold; color:#d93025"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="form_sanxuat" style="display: none;">
+                    <h3>I. VẬT TƯ GIẤY</h3>
+                    <div class="grid-4" style="align-items: flex-end;">
+                        <div class="form-group"><label>Nhà Cung Cấp Giấy</label><input type="text" id="sx_giay_ncc" list="list-ncc" placeholder="Cty Giấy..."></div>
+                        <div class="form-group"><label>Loại Giấy</label><input type="text" id="sx_giay_loai" placeholder="Couche, Duplex..."></div>
+                        <div class="form-group"><label>Khổ Giấy</label><input type="text" list="list-kho" id="sx_giay_kho" placeholder="Chọn khổ"></div>
+                        <div class="form-group"><label>Số lượng (tờ)</label><input type="text" class="format-number" id="sx_giay_sl" value="0" oninput="tinhTongTienPhieu()"></div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:15px; align-items:center;">
+                        <div style="width:200px;"><label>Đơn Giá (Chưa VAT)</label><input type="text" class="format-number" id="sx_giay_gia" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <label class="vat-box"><input type="checkbox" id="sx_giay_vat" onchange="tinhTongTienPhieu()"> + VAT 8%</label>
+                        <div style="width:200px;"><label>Tổng Tiền Giấy</label><input type="text" id="sx_giay_thanh" readonly style="background:#f1f3f4; font-weight:bold; color:#d93025"></div>
+                    </div>
+                    <h3 style="margin-top:20px;">II. MÁY IN</h3>
+                    <div class="grid-4" style="align-items: flex-end;">
+                        <div class="form-group"><label>Xưởng In</label><input type="text" id="sx_in_ncc" list="list-ncc" placeholder="Xưởng in..."></div>
+                        <div class="form-group"><label>Loại Máy In</label><select id="sx_in_may"><option>4 Màu</option><option>1 Màu</option></select></div>
+                        <div class="form-group"><label>Khổ In</label><input type="text" list="list-kho" id="sx_in_kho" placeholder="Chọn khổ"></div>
+                        <div class="form-group"><label>Số lượng (lượt in)</label><input type="text" class="format-number" id="sx_in_sl" value="0" oninput="tinhTongTienPhieu()"></div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:15px; align-items:center;">
+                        <div style="width:200px;"><label>Đơn Giá (Chưa VAT)</label><input type="text" class="format-number" id="sx_in_gia" value="0" oninput="tinhTongTienPhieu()"></div>
+                        <label class="vat-box"><input type="checkbox" id="sx_in_vat" onchange="tinhTongTienPhieu()"> + VAT 8%</label>
+                        <div style="width:200px;"><label>Tổng Tiền In</label><input type="text" id="sx_in_thanh" readonly style="background:#f1f3f4; font-weight:bold; color:#d93025"></div>
+                    </div>
+                    <h3 style="margin-top:20px;">III. GIA CÔNG SAU IN</h3>
+                    <div id="list_giacong"></div>
+                    <button class="btn-outline" onclick="addGiaCongRow()">+ Thêm công đoạn Gia Công</button>
+                </div>
+                <div class="total-price-box">Tổng Nợ Phải Trả NCC (Đã Gồm VAT): <span id="hienthi_tongtien">0</span> đ</div>
+                <button class="btn-main" onclick="saveKeHoach()">LƯU PHIẾU & ĐẨY LỆNH SẢN XUẤT</button>
+            </div>
+            <div class="filter-bar">
+                <b>Tháng/Năm Lọc: </b>
+                <select id="f_month_kh" class="f-select" onchange="renderKeHoach()"><option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option><option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option><option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select>
+                <select id="f_year_kh" class="f-select" onchange="renderKeHoach()"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+                <input type="text" id="search_kh" placeholder="Tìm Mã SX / Bài in..." style="width:250px; margin-left:15px;" oninput="renderKeHoach()">
+            </div>
+            <div class="split-view">
+                <div class="split-left" style="flex: 1.2;">
+                    <h3>Danh Sách Các Lệnh Gần Đây</h3>
+                    <table>
+						<thead><tr><th>Ngày</th><th>Mã SX / Tên Bài In</th><th>Deadline</th><th>Tổng Tiền</th><th>Trạng Thái</th></tr></thead>
+                        <tbody id="table_kehoach"></tbody>
+                    </table>
+                </div>
+                <div class="split-right" id="kh_detail_viewer" style="flex: 1.8;">
+                    <div style="text-align:center; color:#999; margin-top:50px;"><i>Bấm vào một phiếu bên trái để xem chi tiết.</i></div>
+                </div>
+            </div>
+        </div>

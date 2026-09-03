@@ -1,0 +1,111 @@
+	<div id="tab-vitien" class="module">
+    <div class="card" style="border-top: 5px solid #1e8e3e;">
+        <div class="card-header">
+            <h2 style="color: #1e8e3e;">💰 SỔ QUỸ & VÍ TIỀN TỔNG</h2>
+            <button class="btn-small btn-main" style="background:#1e8e3e; padding:10px 20px; width: auto;" onclick="document.getElementById('form_thu_chi').style.display='block'">+ LẬP PHIẾU GIAO DỊCH MỚI</button>
+        </div>
+        
+        <div class="grid-3" style="margin-top: 15px;">
+            <div style="background: linear-gradient(135deg, #34a853 0%, #1e8e3e 100%); color: white; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 13px; font-weight: bold;">💵 TIỀN MẶT (CASH)</div>
+                <div id="so_du_tienmat" style="font-size: 32px; font-weight: bold; margin-top: 5px;">0 đ</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #1a73e8 0%, #1152c4 100%); color: white; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 13px; font-weight: bold;">💳 BANK THIÊN LONG</div>
+                <div id="so_du_thienlong" style="font-size: 32px; font-weight: bold; margin-top: 5px;">0 đ</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #f29900 0%, #e65100 100%); color: white; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 13px; font-weight: bold;">💳 BANK ACB</div>
+                <div id="so_du_acb" style="font-size: 32px; font-weight: bold; margin-top: 5px;">0 đ</div>
+            </div>
+        </div>
+
+<div id="form_thu_chi" style="display:none; background:#f8f9fa; padding:20px; border:2px solid #1e8e3e; border-radius:8px; margin-top:20px;">
+            <h3 style="color:#1e8e3e; margin-top:0;">Lập Phiếu Giao Dịch</h3>
+            <div class="grid-4">
+                <div class="form-group"><label>Loại Giao Dịch</label>
+                    <select id="tc_loai" onchange="toggleFormChuyenTien()">
+                        <option value="THU">📥 THU TIỀN VÀO</option>
+                        <option value="CHI" selected>📤 CHI TIỀN RA</option>
+                        <option value="CHUYEN">🔄 CHUYỂN NỘI BỘ</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Ngày Giao Dịch</label><input type="date" id="tc_ngay"></div>
+                
+                <div class="form-group"><label>Số Tiền / Thành Tiền (VNĐ)</label>
+                    <input type="text" class="format-number" id="tc_sotien" value="0" oninput="tinhDonGiaVT()">
+                </div>
+                
+                <div class="form-group" id="box_tc_doituong"><label>Họ tên người Nộp / Nhận</label><input type="text" id="tc_doituong" placeholder="Tên NCC/NV..."></div>
+            </div>
+            
+            <div class="grid-3">
+                <div class="form-group"><label>Nguồn Quỹ (Ví)</label>
+                    <select id="tc_vi">
+                        <option value="TIENMAT">💵 Tiền Mặt</option>
+                        <option value="THIENLONG">💳 Bank Thiên Long</option>
+                        <option value="ACB">💳 Bank ACB</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hạng Mục</label>
+                    <select id="tc_hangmuc" onchange="toggleFormNhapKhoLe()">
+                        <option value="Khác">Khác / Không phân loại</option>
+                        <option value="Doanh thu">Doanh thu bán hàng</option>
+                        <option value="Chi phí vận hành">Chi phí vận hành</option>
+                        <option value="Nhập hàng">Thanh toán NCC (Theo Lệnh)</option>
+                        <option value="Mua vật tư lẻ">🛒 Mua Vật Tư Lẻ (Vào thẳng Kho)</option>
+                        <option value="Lương">Thanh toán Lương</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Ghi chú</label><input type="text" id="tc_lydo" placeholder="Lý do chi tiết..."></div>
+            </div>
+
+            <div id="box_tc_nhapkho" style="display:none; background:#e8f0fe; padding:15px; border-radius:6px; margin-top:10px; border:1px solid #1a73e8;">
+                <h4 style="margin:0 0 10px 0; color:#1a73e8;">📦 Chi Tiết Nhập Kho Vật Tư</h4>
+                <div class="grid-4">
+                    <div class="form-group"><label>Tên Vật Tư</label><input type="text" id="tc_vt_ten" placeholder="VD: Băng keo..."></div>
+                    <div class="form-group"><label>Đơn Vị Tính</label><input type="text" id="tc_vt_dvt" placeholder="VD: Cuộn, Kg, Tờ..."></div>
+                    <div class="form-group"><label>Số Lượng Nhập</label><input type="text" class="format-number" id="tc_vt_sl" value="1" oninput="tinhDonGiaVT()"></div>
+                    <div class="form-group"><label>Đơn Giá (VNĐ/ĐVT)</label><input type="text" class="format-number readonly-field" id="tc_vt_gia" readonly placeholder="Hệ thống tự chia"></div>
+                </div>
+                <p style="margin:0; font-size:12px; color:#1e8e3e; font-style:italic;">* Thành tiền nhập kho được liên kết trực tiếp với "Số Tiền" của Phiếu Chi.</p>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-main" style="background:#1e8e3e; flex:1;" onclick="luuPhieuThuChi()">LƯU PHIẾU VÀO SỔ QUỸ</button>
+                <button class="btn-outline" style="flex:0.3;" onclick="document.getElementById('form_thu_chi').style.display='none'">Đóng</button>
+            </div>
+        </div>
+        
+       <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; margin-top: 20px; border-bottom: 2px solid #1e8e3e; padding-bottom: 10px;">
+            <h3 style="margin:0; color:#1e8e3e;">Sổ Chi Tiết Giao Dịch</h3>
+            <div class="filter-bar" style="margin:0; padding:0; border:none; background:transparent;">
+                <select id="f_month_sq" class="f-select" onchange="renderViTien()">
+                    <option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option>
+                    <option value="04" selected>Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option>
+                    <option value="07">Tháng 7</option><option value="08">Tháng 8</option><option value="09">Tháng 9</option>
+                    <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                </select>
+                <select id="f_year_sq" class="f-select" onchange="renderViTien()">
+                    <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                </select>
+            </div>
+        </div>
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Mã Phiếu</th>
+                    <th style="width: 80px;">Ngày</th>
+                    <th>Nguồn Quỹ</th>
+                    <th>Đối Tượng</th>
+                    <th>Hạng Mục</th>
+                    <th>Ghi chú</th>
+                    <th class="text-right">Số Tiền (VNĐ)</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="table_giao_dich_vi"></tbody>
+        </table>
+    </div>
+</div>
