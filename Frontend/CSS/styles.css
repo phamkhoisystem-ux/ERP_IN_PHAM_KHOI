@@ -231,11 +231,26 @@
         .receipt-signatures i { font-size: 12px; }
         .receipt-confirmation { margin-top: 4px; }
         .receipt-confirmation .receipt-value { width: calc(100% - 255px); }
+        .production-print { font-family: 'Times New Roman', serif; color: #000; font-size: 12px; line-height: 1.25; }
+        .production-print .receipt-header { margin-bottom: 12px; }
+        .production-print .receipt-title { margin: 6px 0 3px; }
+        .production-print .receipt-title h2 { font-size: 17px; }
+        .production-document-number { text-align: right; margin: 0 3% 5px 0; }
+        .production-document-number span { display: inline-block; min-width: 85px; border-bottom: 1px dotted #555; }
+        .production-meta { display: grid; grid-template-columns: 16% 34% 16% 34%; border-top: 1px solid #555; border-left: 1px solid #555; margin-bottom: 8px; }
+        .production-meta > * { border-right: 1px solid #555; border-bottom: 1px solid #555; padding: 3px 5px; min-height: 16px; }
+        .production-meta .production-meta-wide { grid-column: span 3; }
+        .production-print h3 { font-size: 12px; margin: 7px 0 4px; }
+        .production-print table { font-size: 9px !important; }
+        .production-print th, .production-print td { padding: 3px !important; }
+        .production-print .production-total { font-size: 12px !important; margin: 7px 0 !important; }
+        .production-print .receipt-signatures { margin-top: 12px; }
+        .production-print .receipt-signatures > div { width: 30%; min-height: 48px; }
         
         /* In ấn có hai chế độ riêng: phiếu thu/chi hoặc một báo cáo tài chính.
            Không dùng visibility:hidden toàn trang vì sẽ làm các báo cáo in trắng. */
         @media print {
-            @page { size: A4; margin: 14mm; }
+            @page { size: A5 landscape; margin: 8mm; }
             body { display: block; height: auto; overflow: visible; background: #fff; }
             .sidebar, .mobile-header, #login-overlay, .btn-print, .btn-success { display: none !important; }
 
