@@ -1,23 +1,44 @@
 </head>
 <body>
-	<div id="print_receipt_area" style="display:none; font-family: 'Times New Roman', serif; line-height: 1.5; color:#000;">
-    <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="margin:0; font-size: 24px; text-transform: uppercase;" id="prt_title">PHIẾU THU TIỀN</h2>
-        <p style="margin:5px 0 0 0; font-style: italic;" id="prt_date">Ngày ... tháng ... năm ...</p>
+	<div id="print_receipt_area" class="receipt-print" style="display:none;">
+        <header class="receipt-header">
+            <div class="receipt-company">
+                <img src="assets/logo-pk.svg" alt="Phạm Khôi" class="receipt-logo">
+                <div>Địa chỉ: 119/24 Nguyễn Văn Cừ, P.2, Q.5, HCM</div>
+                <div>SĐT: 0906 9000 21</div>
+            </div>
+            <div class="receipt-form-note">
+                <b>Mẫu số 01 - TT</b><br>
+                <i>(Kèm theo Thông tư số 99/2025/TT-BTC<br>ngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)</i>
+            </div>
+        </header>
+        <section class="receipt-title">
+            <h2 id="prt_title">PHIẾU THU</h2>
+            <p id="prt_date">Ngày ... tháng ... năm ...</p>
+        </section>
+        <section class="receipt-numbering">
+            <div>Quyển số: <span></span></div>
+            <div>Số: <span id="prt_number"></span></div>
+            <div>Nợ: <span></span></div>
+            <div>Có: <span></span></div>
+        </section>
+        <section class="receipt-fields">
+            <p>Họ và tên người <span id="prt_person_label">nộp tiền</span>: <span id="prt_name" class="receipt-value"></span></p>
+            <p>Địa chỉ: <span id="prt_address" class="receipt-value"></span></p>
+            <p><span id="prt_reason_label">Lý do nộp</span>: <span id="prt_reason" class="receipt-value"></span></p>
+            <p>Số tiền: <span id="prt_amount" class="receipt-value receipt-amount"></span> <span class="receipt-words">(Viết bằng chữ):</span> <span id="prt_amount_words" class="receipt-value"></span></p>
+            <p>Kèm theo: <span id="prt_attachment" class="receipt-value"></span><span class="receipt-voucher">Chứng từ gốc: <span id="prt_voucher" class="receipt-value"></span></span></p>
+        </section>
+        <div class="receipt-date-sign" id="prt_sign_date"></div>
+        <div class="receipt-signatures">
+            <div><b>Giám đốc</b><br><i>(Ký, họ tên, đóng dấu)</i></div>
+            <div><b>Kế toán trưởng</b><br><i>(Ký, họ tên)</i></div>
+            <div><b id="prt_payer_signature">Người nộp<br>tiền</b><br><i>(Ký, họ tên)</i></div>
+            <div><b>Người lập<br>phiếu</b><br><i>(Ký, họ tên)</i></div>
+            <div><b>Thủ quỹ</b><br><i>(Ký, họ tên)</i></div>
+        </div>
+        <p class="receipt-confirmation">Đã nhận đủ số tiền (viết bằng chữ): <span id="prt_received_words" class="receipt-value"></span></p>
     </div>
-    <table style="width: 100%; border: none; font-size: 16px;">
-        <tr><td style="width: 150px; padding: 5px 0;"><b>Họ, tên người nộp/nhận:</b></td><td id="prt_name" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
-        <tr><td style="padding: 5px 0;"><b>Lý do:</b></td><td id="prt_reason" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
-        <tr><td style="padding: 5px 0;"><b>Số tiền:</b></td><td style="padding: 5px 0; border-bottom: 1px dotted #ccc;"><b id="prt_amount"></b> VNĐ</td></tr>
-        <tr><td style="padding: 5px 0;"><b>Nguồn quỹ (Ví):</b></td><td id="prt_wallet" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
-        <tr><td style="padding: 5px 0;"><b>Hạng mục:</b></td><td id="prt_category" style="padding: 5px 0; border-bottom: 1px dotted #ccc;"></td></tr>
-    </table>
-    <div style="display: flex; justify-content: space-between; margin-top: 40px; text-align: center;">
-        <div style="width: 30%;"><b>Người lập phiếu</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
-        <div style="width: 30%;"><b>Người nộp/nhận</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
-        <div style="width: 30%;"><b>Giám đốc (Sếp)</b><br><i style="font-size: 12px;">(Ký, họ tên)</i></div>
-    </div>
-</div>
 	<div id="print_production_area" style="display:none; font-family:'Times New Roman', serif; line-height:1.5; color:#000;"></div>
 	<div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
     <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 350px;">

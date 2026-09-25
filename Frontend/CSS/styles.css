@@ -203,6 +203,34 @@
         .admin-pin-card .card-header { margin-bottom: 10px; }
         .admin-pin-status { margin: 5px 0 0; color: #475569; font-size: 14px; }
         .admin-pin-note { margin: 0 0 18px; color: #64748b; font-size: 14px; line-height: 1.5; }
+
+        .receipt-print { font-family: 'Times New Roman', serif; color: #000; font-size: 15px; line-height: 1.35; }
+        .receipt-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .receipt-company { width: 43%; font-size: 13px; }
+        .receipt-logo { display: block; width: 155px; height: 48px; object-fit: contain; object-position: left center; margin-bottom: 4px; }
+        .receipt-form-note { width: 47%; text-align: center; font-size: 13px; line-height: 1.25; }
+        .receipt-form-note b { font-size: 15px; }
+        .receipt-title { text-align: center; margin: 30px 0 5px; }
+        .receipt-title h2 { margin: 0; font-size: 20px; }
+        .receipt-title p { margin: 6px 0 0; font-style: italic; }
+        .receipt-numbering { width: 25%; margin-left: auto; margin-top: 6px; line-height: 1.75; }
+        .receipt-numbering span, .receipt-value { border-bottom: 1px dotted #555; min-width: 90px; display: inline-block; }
+        .receipt-numbering span { width: 120px; }
+        .receipt-fields { margin-top: 5px; }
+        .receipt-fields p { margin: 9px 0; white-space: nowrap; }
+        .receipt-fields .receipt-value { width: calc(100% - 185px); }
+        .receipt-fields .receipt-amount { width: 220px; }
+        .receipt-words { margin-left: 8px; }
+        .receipt-fields p:nth-child(4) #prt_amount_words { width: calc(100% - 420px); }
+        .receipt-voucher { float: right; width: 48%; }
+        .receipt-voucher .receipt-value { width: 58%; }
+        .receipt-date-sign { text-align: right; margin-top: 34px; padding-right: 4%; font-style: italic; }
+        .receipt-signatures { display: flex; justify-content: space-between; text-align: center; margin-top: 7px; }
+        .receipt-signatures > div { width: 19%; min-height: 90px; }
+        .receipt-signatures b { font-size: 15px; }
+        .receipt-signatures i { font-size: 12px; }
+        .receipt-confirmation { margin-top: 4px; }
+        .receipt-confirmation .receipt-value { width: calc(100% - 255px); }
         
         /* In ấn có hai chế độ riêng: phiếu thu/chi hoặc một báo cáo tài chính.
            Không dùng visibility:hidden toàn trang vì sẽ làm các báo cáo in trắng. */

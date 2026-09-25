@@ -465,13 +465,27 @@ function inPhieuThuChi(idGD) {
     let gd = db.giaoDichVi.find(g => g.idGD === idGD);
     if(!gd) return;
     let dt = new Date(gd.date);
-    document.getElementById('prt_title').innerText = gd.loai === 'THU' ? 'PHIẾU THU TIỀN' : 'PHIẾU CHI TIỀN';
+    const isReceipt = gd.loai === 'THU';
+    const day = ("0" + dt.getDate()).slice(-2);
+    const month = ("0" + (dt.getMonth() + 1)).slice(-2);
+    const amount = Number(gd.soTien) || 0;
+    const amountWords = vietNamDongBangChu(amount);
+
+    document.getElementById('prt_title').innerText = isReceipt ? 'PHIẾU THU' : 'PHIẾU CHI';
     document.getElementById('prt_date').innerText = `Ngày ${("0"+dt.getDate()).slice(-2)} tháng ${("0"+(dt.getMonth()+1)).slice(-2)} năm ${dt.getFullYear()}`;
+    document.getElementById('prt_number').innerText = gd.idGD || '';
+    document.getElementById('prt_person_label').innerText = isReceipt ? 'nộp tiền' : 'nhận tiền';
+    document.getElementById('prt_reason_label').innerText = isReceipt ? 'Lý do nộp' : 'Lý do chi';
     document.getElementById('prt_name').innerText = gd.doiTuong;
+    document.getElementById('prt_address').innerText = '';
     document.getElementById('prt_reason').innerText = gd.lyDo;
-    document.getElementById('prt_amount').innerText = formatVN(gd.soTien);
-    document.getElementById('prt_wallet').innerText = mapViPrintName(gd.vi);
-    document.getElementById('prt_category').innerText = gd.hangMuc || 'Khác';
+    document.getElementById('prt_amount').innerText = `${formatVN(amount)} đồng`;
+    document.getElementById('prt_amount_words').innerText = amountWords;
+    document.getElementById('prt_received_words').innerText = amountWords;
+    document.getElementById('prt_attachment').innerText = gd.hangMuc || '';
+    document.getElementById('prt_voucher').innerText = mapViPrintName(gd.vi);
+    document.getElementById('prt_sign_date').innerText = `Ngày ${day} tháng ${month} năm ${dt.getFullYear()}`;
+    document.getElementById('prt_payer_signature').innerHTML = isReceipt ? 'Người nộp<br>tiền' : 'Người nhận<br>tiền';
     // CSS chỉ hiển thị khu vực phiếu khi có lớp này; các báo cáo dùng print-report.
     document.body.classList.remove('print-report');
     document.body.classList.add('print-receipt');
@@ -481,6 +495,50 @@ function inPhieuThuChi(idGD) {
         window.print();
         document.title = previousTitle;
     }, 80);
+}
+
+function vietNamDongBangChu(value) {
+    const digitWords = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+    const readThreeDigits = (number, full) => {
+        const hundreds = Math.floor(number / 100);
+        const tens = Math.floor((number % 100) / 10);
+        const units = number % 10;
+        let words = [];
+        if (full || hundreds > 0) words.push(digitWords[hundreds], 'trăm');
+        if (tens > 1) {
+            words.push(digitWords[tens], 'mươi');
+            if (units === 1) words.push('mốt');
+            else if (units === 4) words.push('tư');
+            else if (units === 5) words.push('lăm');
+            else if (units) words.push(digitWords[units]);
+        } else if (tens === 1) {
+            words.push('mười');
+            if (units === 5) words.push('lăm');
+            else if (units) words.push(digitWords[units]);
+        } else if (units) {
+            if (full || hundreds > 0) words.push('lẻ');
+            words.push(digitWords[units]);
+        }
+        return words.join(' ');
+    };
+
+    const amount = Math.round(Math.abs(Number(value) || 0));
+    if (!amount) return 'Không đồng chẵn';
+    const groups = ['', 'nghìn', 'triệu', 'tỷ'];
+    const triplets = [];
+    let rest = amount;
+    while (rest > 0) {
+        triplets.unshift(rest % 1000);
+        rest = Math.floor(rest / 1000);
+    }
+    const result = triplets.reduce((words, group, index) => {
+        if (!group) return words;
+        const groupName = groups[triplets.length - index - 1];
+        words.push(`${readThreeDigits(group, index > 0 && group < 100)}${groupName ? ` ${groupName}` : ''}`.trim());
+        return words;
+    }, []);
+    const text = result.join(' ').replace(/\s+/g, ' ').trim();
+    return `${text.charAt(0).toUpperCase()}${text.slice(1)} đồng chẵn`;
 }
 // Hàm mở/đóng Menu trên Mobile
 function toggleMobileMenu() {
