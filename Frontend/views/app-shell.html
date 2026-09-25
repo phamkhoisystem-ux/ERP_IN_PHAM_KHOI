@@ -4,30 +4,19 @@
         <header class="receipt-header">
             <div class="receipt-company">
                 <img src="assets/logo-pk.svg" alt="Phạm Khôi" class="receipt-logo">
-                <div>Địa chỉ: 119/24 Nguyễn Văn Cừ, P.2, Q.5, HCM</div>
                 <div>SĐT: 0906 9000 21</div>
-            </div>
-            <div class="receipt-form-note">
-                <b>Mẫu số 01 - TT</b><br>
-                <i>(Kèm theo Thông tư số 99/2025/TT-BTC<br>ngày 27 tháng 10 năm 2025 của Bộ trưởng Bộ Tài chính)</i>
             </div>
         </header>
         <section class="receipt-title">
             <h2 id="prt_title">PHIẾU THU</h2>
-            <p id="prt_date">Ngày ... tháng ... năm ...</p>
-        </section>
-        <section class="receipt-numbering">
-            <div>Quyển số: <span></span></div>
-            <div>Số: <span id="prt_number"></span></div>
-            <div>Nợ: <span></span></div>
-            <div>Có: <span></span></div>
+            <p><span id="prt_date">Ngày ... tháng ... năm ...</span> · Số phiếu: <b id="prt_number"></b></p>
         </section>
         <section class="receipt-fields">
-            <p>Họ và tên người <span id="prt_person_label">nộp tiền</span>: <span id="prt_name" class="receipt-value"></span></p>
-            <p>Địa chỉ: <span id="prt_address" class="receipt-value"></span></p>
-            <p><span id="prt_reason_label">Lý do nộp</span>: <span id="prt_reason" class="receipt-value"></span></p>
-            <p>Số tiền: <span id="prt_amount" class="receipt-value receipt-amount"></span> <span class="receipt-words">(Viết bằng chữ):</span> <span id="prt_amount_words" class="receipt-value"></span></p>
-            <p>Kèm theo: <span id="prt_attachment" class="receipt-value"></span><span class="receipt-voucher">Chứng từ gốc: <span id="prt_voucher" class="receipt-value"></span></span></p>
+            <div class="receipt-field-row"><span class="receipt-label">Họ và tên người <span id="prt_person_label">nộp tiền</span>:</span><span id="prt_name" class="receipt-value"></span></div>
+            <div class="receipt-field-row"><span class="receipt-label"><span id="prt_reason_label">Lý do nộp</span>:</span><span id="prt_reason" class="receipt-value"></span></div>
+            <div class="receipt-field-row"><span class="receipt-label">Số tiền:</span><span id="prt_amount" class="receipt-value"></span></div>
+            <div class="receipt-field-row"><span class="receipt-label">Khoản <span id="prt_expense_label">thu</span>:</span><span id="prt_attachment" class="receipt-value"></span></div>
+            <div class="receipt-field-row"><span class="receipt-label">Nguồn quỹ:</span><span id="prt_voucher" class="receipt-value"></span></div>
         </section>
         <div class="receipt-date-sign" id="prt_sign_date"></div>
         <div class="receipt-signatures">
@@ -37,7 +26,6 @@
             <div><b>Người lập<br>phiếu</b><br><i>(Ký, họ tên)</i></div>
             <div><b>Thủ quỹ</b><br><i>(Ký, họ tên)</i></div>
         </div>
-        <p class="receipt-confirmation">Đã nhận đủ số tiền (viết bằng chữ): <span id="prt_received_words" class="receipt-value"></span></p>
     </div>
 	<div id="print_production_area" style="display:none; font-family:'Times New Roman', serif; line-height:1.5; color:#000;"></div>
 	<div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">

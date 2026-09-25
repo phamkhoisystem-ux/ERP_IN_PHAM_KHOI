@@ -206,31 +206,22 @@
 
         .receipt-print { font-family: 'Times New Roman', serif; color: #000; font-size: 15px; line-height: 1.35; }
         .receipt-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .receipt-company { width: 43%; font-size: 13px; }
+        .receipt-company { width: 43%; font-size: 12px; }
         .receipt-logo { display: block; width: 155px; height: 48px; object-fit: contain; object-position: left center; margin-bottom: 4px; }
         .receipt-form-note { width: 47%; text-align: center; font-size: 13px; line-height: 1.25; }
         .receipt-form-note b { font-size: 15px; }
-        .receipt-title { text-align: center; margin: 30px 0 5px; }
-        .receipt-title h2 { margin: 0; font-size: 20px; }
-        .receipt-title p { margin: 6px 0 0; font-style: italic; }
-        .receipt-numbering { width: 25%; margin-left: auto; margin-top: 6px; line-height: 1.75; }
-        .receipt-numbering span, .receipt-value { border-bottom: 1px dotted #555; min-width: 90px; display: inline-block; }
-        .receipt-numbering span { width: 120px; }
-        .receipt-fields { margin-top: 5px; }
-        .receipt-fields p { margin: 9px 0; white-space: nowrap; }
-        .receipt-fields .receipt-value { width: calc(100% - 185px); }
-        .receipt-fields .receipt-amount { width: 220px; }
-        .receipt-words { margin-left: 8px; }
-        .receipt-fields p:nth-child(4) #prt_amount_words { width: calc(100% - 420px); }
-        .receipt-voucher { float: right; width: 48%; }
-        .receipt-voucher .receipt-value { width: 58%; }
-        .receipt-date-sign { text-align: right; margin-top: 34px; padding-right: 4%; font-style: italic; }
+        .receipt-title { text-align: center; margin: 4px 0 5px; }
+        .receipt-title h2 { margin: 0; font-size: 18px; }
+        .receipt-title p { margin: 3px 0 0; font-size: 12px; font-style: italic; }
+        .receipt-value { border-bottom: 1px dotted #555; min-width: 0; display: block; }
+        .receipt-fields { margin-top: 3px; }
+        .receipt-field-row { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: end; column-gap: 4px; min-height: 23px; }
+        .receipt-label { white-space: nowrap; }
+        .receipt-date-sign { text-align: right; margin-top: 12px; padding-right: 4%; font-style: italic; font-size: 12px; }
         .receipt-signatures { display: flex; justify-content: space-between; text-align: center; margin-top: 7px; }
-        .receipt-signatures > div { width: 19%; min-height: 90px; }
-        .receipt-signatures b { font-size: 15px; }
-        .receipt-signatures i { font-size: 12px; }
-        .receipt-confirmation { margin-top: 4px; }
-        .receipt-confirmation .receipt-value { width: calc(100% - 255px); }
+        .receipt-signatures > div { width: 19%; min-height: 52px; }
+        .receipt-signatures b { font-size: 12px; }
+        .receipt-signatures i { font-size: 10px; }
         .production-print { font-family: 'Times New Roman', serif; color: #000; font-size: 12px; line-height: 1.25; }
         .production-print .receipt-header { margin-bottom: 12px; }
         .production-print .receipt-title { margin: 6px 0 3px; }
@@ -241,7 +232,7 @@
         .production-meta > * { border-right: 1px solid #555; border-bottom: 1px solid #555; padding: 3px 5px; min-height: 16px; }
         .production-meta .production-meta-wide { grid-column: span 3; }
         .production-print h3 { font-size: 12px; margin: 7px 0 4px; }
-        .production-print table { font-size: 9px !important; }
+        .production-print table { display: table !important; width: 100% !important; min-width: 100% !important; table-layout: fixed; font-size: 10px !important; }
         .production-print th, .production-print td { padding: 3px !important; }
         .production-print .production-total { font-size: 12px !important; margin: 7px 0 !important; }
         .production-print .receipt-signatures { margin-top: 12px; }
@@ -259,6 +250,7 @@
 
             body.print-production #erp-app-root > :not(#print_production_area) { display: none !important; }
             body.print-production #print_production_area { display: block !important; position: static; width: 100%; padding: 0; }
+            body.print-production .production-print table { display: table !important; width: 100% !important; min-width: 100% !important; }
 
             body.print-report #print_receipt_area { display: none !important; }
             body.print-report #erp-app-root > :not(.main-content) { display: none !important; }

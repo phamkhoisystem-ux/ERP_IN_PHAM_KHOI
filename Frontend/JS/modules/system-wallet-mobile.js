@@ -469,19 +469,16 @@ function inPhieuThuChi(idGD) {
     const day = ("0" + dt.getDate()).slice(-2);
     const month = ("0" + (dt.getMonth() + 1)).slice(-2);
     const amount = Number(gd.soTien) || 0;
-    const amountWords = vietNamDongBangChu(amount);
 
     document.getElementById('prt_title').innerText = isReceipt ? 'PHIẾU THU' : 'PHIẾU CHI';
     document.getElementById('prt_date').innerText = `Ngày ${("0"+dt.getDate()).slice(-2)} tháng ${("0"+(dt.getMonth()+1)).slice(-2)} năm ${dt.getFullYear()}`;
     document.getElementById('prt_number').innerText = gd.idGD || '';
     document.getElementById('prt_person_label').innerText = isReceipt ? 'nộp tiền' : 'nhận tiền';
     document.getElementById('prt_reason_label').innerText = isReceipt ? 'Lý do nộp' : 'Lý do chi';
+    document.getElementById('prt_expense_label').innerText = isReceipt ? 'thu' : 'chi';
     document.getElementById('prt_name').innerText = gd.doiTuong;
-    document.getElementById('prt_address').innerText = '';
     document.getElementById('prt_reason').innerText = gd.lyDo;
     document.getElementById('prt_amount').innerText = `${formatVN(amount)} đồng`;
-    document.getElementById('prt_amount_words').innerText = amountWords;
-    document.getElementById('prt_received_words').innerText = amountWords;
     document.getElementById('prt_attachment').innerText = gd.hangMuc || '';
     document.getElementById('prt_voucher').innerText = mapViPrintName(gd.vi);
     document.getElementById('prt_sign_date').innerText = `Ngày ${day} tháng ${month} năm ${dt.getFullYear()}`;
