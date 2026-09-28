@@ -12,3 +12,4 @@ ENV NODE_ENV=production
 EXPOSE 4000
 
 CMD BOOTSTRAP_ADMIN_USERNAME=admin BOOTSTRAP_ADMIN_PASSWORD=185cmT8@12345678 node Backend/scripts/bootstrap-admin.js && npm --prefix Backend start
+CMD ["sh", "-c", "npm run migrate && node Backend/scripts/bootstrap-admin.js && npm start"]
