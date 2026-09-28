@@ -15,4 +15,4 @@ EXPOSE 4000
 WORKDIR /app/Backend
 
 # Lệnh khởi chạy tuần tự: Cập nhật cấu trúc DB -> Tạo tài khoản Admin -> Bật server
-CMD ["sh", "-c", "npm run migrate && BOOTSTRAP_ADMIN_USERNAME=admin BOOTSTRAP_ADMIN_PASSWORD=185cmT8@12345678 node scripts/bootstrap-admin.js && npm start"]
+CMD ["sh", "-c", "BOOTSTRAP_ADMIN_USERNAME=admin BOOTSTRAP_ADMIN_PASSWORD=185cmT8@12345678 node scripts/bootstrap-admin.js && npm start"]
