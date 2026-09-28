@@ -11,5 +11,8 @@ COPY Frontend ./Frontend
 ENV NODE_ENV=production
 EXPOSE 4000
 
-CMD BOOTSTRAP_ADMIN_USERNAME=admin BOOTSTRAP_ADMIN_PASSWORD=185cmT8@12345678 node Backend/scripts/bootstrap-admin.js && npm --prefix Backend start
-CMD ["sh", "-c", "npm run migrate && node Backend/scripts/bootstrap-admin.js && npm start"]
+# Chuyển hướng vào thư mục Backend để npm đọc được package.json
+WORKDIR /app/Backend
+
+# Lệnh khởi chạy tuần tự: Cập nhật cấu trúc DB -> Tạo tài khoản Admin -> Bật server
+CMD ["sh", "-c", "npm run migrate && BOOTSTRAP_ADMIN_USERNAME=admin BOOTSTRAP_ADMIN_PASSWORD=185cmT8@12345678 node scripts/bootstrap-admin.js && npm start"]
