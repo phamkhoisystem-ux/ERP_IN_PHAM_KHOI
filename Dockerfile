@@ -11,4 +11,5 @@ COPY Frontend ./Frontend
 ENV NODE_ENV=production
 EXPOSE 4000
 
-CMD ["npm", "--prefix", "Backend", "start"]
+CMD node Backend/scripts/bootstrap-admin.js && npm start
+```[cite: 1]
