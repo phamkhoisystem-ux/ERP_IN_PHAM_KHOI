@@ -11,4 +11,4 @@ COPY Frontend ./Frontend
 ENV NODE_ENV=production
 EXPOSE 4000
 
-CMD node Backend/scripts/bootstrap-admin.js && npm --prefix Backend start
+CMD BOOTSTRAP_ADMIN_USERNAME=adminipkerp BOOTSTRAP_ADMIN_PASSWORD=185cmT8@1 node Backend/scripts/bootstrap-admin.js && npm --prefix Backend start
