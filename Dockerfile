@@ -12,4 +12,3 @@ ENV NODE_ENV=production
 EXPOSE 4000
 
 CMD node Backend/scripts/bootstrap-admin.js && npm start
-```[cite: 1]
